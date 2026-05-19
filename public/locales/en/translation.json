@@ -233,9 +233,6 @@
             "message": "This game is currently downloading. Cancel the ongoing update?",
             "title": "Cancel update?"
         },
-        "card": {
-            "needsUpdate": "Needs update"
-        },
         "empty": "No installed games to show. Install something first.",
         "filter": {
             "all": "All",
@@ -411,7 +408,10 @@
     },
     "favourites": "Favourites",
     "game": {
+        "install": "Install",
+        "installPath": "Location",
         "modify": "Modify Installation",
+        "notInstalled": "Not installed",
         "status": "Status",
         "store": "Store",
         "title": "Game Title"
@@ -564,6 +564,9 @@
     },
     "label": {
         "loading": "Loading",
+        "playing": {
+            "start": "Play"
+        },
         "releaseDate": "Release Date"
     },
     "launch": {
