@@ -180,7 +180,7 @@
   align-items: center;
   justify-content: center;
   padding: 8px 32px 4px;
-  min-height: 48px;
+  min-height: 0;
 }
 
 .consoleStage {
@@ -475,5 +475,655 @@
     width: 100vw;
     padding: 0;
     margin: 0;
+  }
+}
+
+/* ============================================================
+   DUSTY — Retro Shelf Layout v2
+   ============================================================ */
+
+.ConsoleMode {
+  --spine-width: clamp(40px, 4vw, 62px);
+  --spine-height: clamp(200px, 26vh, 300px);
+  /* Give more space to the title bar (box display area) */
+  grid-template-rows: auto 1fr auto auto !important;
+
+  background:
+    radial-gradient(ellipse 35vw 55vh at 68% 0%, rgba(255,185,60,0.28) 0%, rgba(220,140,30,0.12) 35%, transparent 65%),
+    repeating-linear-gradient(175deg,
+      rgba(60,30,5,0) 0px, rgba(60,30,5,0) 8px,
+      rgba(40,20,3,0.1) 8px, rgba(40,20,3,0.1) 9px
+    ),
+    linear-gradient(180deg, #1a0d03 0%, #120900 40%, #0c0600 100%);
+}
+
+/* Title bar becomes the box display area */
+.consoleTitleBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 32px 4px;
+  min-height: 0 !important;
+  overflow: hidden;
+  background: transparent;
+  border-bottom: none;
+  /* Fill the grid row */
+  height: 100%;
+  width: 100%;
+}
+
+/* ── Box + Disc display ── */
+.dustyBoxDisplay {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  animation: titleFade 220ms ease;
+}
+
+/* Disc behind the box */
+.dustyDiscWrap {
+  position: absolute;
+  /* Position relative to the box: overlap from the right side */
+  left: calc(50% + clamp(60px, 10vh, 110px));
+  top: 50%;
+  transform: translateY(-46%);
+  z-index: 1;
+  /* Slight opacity so it looks like it's behind */
+  filter: brightness(0.88);
+}
+
+.dustyDisc {
+  width: clamp(200px, 30vh, 340px);
+  height: clamp(200px, 30vh, 340px);
+  border-radius: 50%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.5);
+  animation: discSpin 8s linear infinite;
+  position: relative;
+}
+
+@keyframes discSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.dustyDiscSurface {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #2a2a3a 0deg, #d4a030 20deg, #6a6a8a 50deg,
+    #e8c060 80deg, #3a3a4a 110deg, #c09030 140deg,
+    #2a2a3a 180deg, #d4a030 200deg, #6a6a8a 230deg,
+    #e8c060 260deg, #3a3a4a 290deg, #c09030 320deg,
+    #2a2a3a 360deg
+  );
+  position: relative;
+  overflow: hidden;
+}
+
+.dustyDiscTracks {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle at center,
+    transparent 0px, transparent 3px,
+    rgba(0,0,0,0.15) 4px, transparent 5px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* Circular label in center */
+.dustyDiscLabel {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52%;
+  height: 52%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.3);
+}
+
+.dustyDiscLabelArt {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: saturate(0.7) brightness(0.85);
+}
+
+.dustyDiscLabelOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(255,240,200,0.25) 0%,
+    transparent 60%
+  );
+}
+
+.dustyDiscHub {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30%; height: 30%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #2a2a2a 0%, #111 100%);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+.dustyDiscHole {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12%; height: 12%;
+  border-radius: 50%;
+  background: #000;
+  box-shadow: inset 0 0 4px rgba(255,180,80,0.3);
+}
+
+.dustyDiscSheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 30% 20%,
+    rgba(255,240,200,0.45) 0%,
+    rgba(255,220,160,0.2) 20%,
+    transparent 55%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* ── Game Box ── */
+.dustyBoxCase {
+  position: relative;
+  z-index: 2;
+  /* Use viewport height to size the box */
+  height: clamp(260px, 55vh, 480px);
+  aspect-ratio: 3 / 4;
+  display: flex;
+  flex-direction: column;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow:
+    0 24px 70px rgba(0,0,0,0.9),
+    0 0 0 1px rgba(255,255,255,0.06),
+    6px 0 12px rgba(0,0,0,0.6),
+    -2px 0 4px rgba(0,0,0,0.8);
+  background: #111;
+  /* No animation on the box itself */
+}
+
+/* boxFloat removed — box is static, only art animates */
+
+.dustyBoxTopBar {
+  height: 26px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  background: rgba(0,0,0,0.6);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  z-index: 2;
+}
+
+.dustyBoxPCBadge {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.dustyBoxPCMain {
+  font-size: 9px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 1px;
+  font-family: var(--primary-font-family);
+}
+
+.dustyBoxPCLine {
+  font-size: 6px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.5px;
+  font-family: var(--primary-font-family);
+}
+
+.dustyBoxStoreLabel {
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  font-family: var(--primary-font-family);
+}
+
+.dustyBoxArtWrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.dustyBoxArt {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation: artFadeIn 0.25s ease forwards;
+}
+
+@keyframes artFadeIn {
+  from { opacity: 0.4; }
+  to   { opacity: 1; }
+}
+
+.dustyBoxSheen {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg,
+      rgba(255,255,255,0.14) 0%,
+      transparent 35%,
+      rgba(0,0,0,0.08) 100%
+    );
+  pointer-events: none;
+}
+
+.dustyBoxSpineEdge {
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 12px;
+  background: linear-gradient(to right,
+    rgba(0,0,0,0.55) 0%,
+    rgba(0,0,0,0.15) 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.dustyBoxBottom {
+  height: 26px;
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.dustyBoxTitle {
+  font-size: clamp(0.6rem, 0.9vw, 0.8rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #c8a058;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--primary-font-family);
+}
+
+/* ── Spine card override ── */
+.consoleGrid {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-end !important;
+  justify-content: flex-start !important;
+  gap: 1px !important;
+  grid-template-columns: unset !important;
+  padding: 0 !important;
+  height: var(--spine-height);
+  min-height: var(--spine-height);
+}
+
+.consoleGridScroller {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  padding-bottom: 20px !important;
+  padding-top: 0 !important;
+}
+
+/* Wooden shelf plank */
+.consoleStage {
+  position: relative;
+}
+.consoleStage::before {
+  content: '';
+  position: absolute;
+  bottom: 18px;
+  left: 0; right: 0;
+  height: 22px;
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(120,65,15,0) 0px, rgba(120,65,15,0) 40px,
+      rgba(80,40,8,0.3) 40px, rgba(80,40,8,0.3) 41px
+    ),
+    linear-gradient(180deg, #8a5020 0%, #5a3010 40%, #3a1e08 100%);
+  box-shadow:
+    0 -1px 0 rgba(200,120,40,0.25) inset,
+    0 6px 24px rgba(0,0,0,0.9);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.consoleCard {
+  width: var(--spine-width) !important;
+  height: var(--spine-height) !important;
+  aspect-ratio: unset !important;
+  border-radius: 1px 1px 0 0 !important;
+  overflow: hidden;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-shrink: 0;
+  filter: brightness(0.65) saturate(0.7);
+  transition:
+    transform 0.22s cubic-bezier(.22,.68,0,1.2),
+    filter 0.18s ease,
+    box-shadow 0.18s ease !important;
+
+  &:hover {
+    filter: brightness(1.0) saturate(0.9) !important;
+    transform: translateY(-6px);
+    z-index: 3;
+  }
+
+  &.focused {
+    transform: translateY(-18px) !important;
+    filter: brightness(1.25) saturate(1.1) !important;
+    box-shadow:
+      0 18px 40px rgba(0,0,0,0.85),
+      0 0 0 1px rgba(255,200,100,0.5),
+      0 0 20px rgba(255,180,60,0.25) !important;
+    z-index: 5;
+  }
+}
+
+/* Spine left black plastic edge */
+.spineEdge {
+  width: 6px;
+  flex-shrink: 0;
+  background: linear-gradient(to right, #0a0806, #1a1208);
+}
+
+.spineBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 2px;
+  background: #0e0a06;
+  overflow: hidden;
+}
+
+/* PC CD-ROM at top — horizontal text rotated */
+.spineTopBadge {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.spineTopPC {
+  font-size: 8px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 1px;
+  font-family: var(--primary-font-family);
+  line-height: 1;
+}
+
+.spineTopMedia {
+  font-size: 5px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.5px;
+  font-family: var(--primary-font-family);
+  line-height: 1;
+}
+
+/* Logo or title in center */
+.spineCenterArea {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+  padding: 4px 1px;
+}
+
+.spineLogoWrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Rotate the container so the logo reads bottom-to-top like a real spine */
+  transform: rotate(-90deg);
+  overflow: hidden;
+}
+
+.spineLogoImg {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  filter: brightness(0.85);
+}
+
+.spineTitleText {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: clamp(7px, 0.8vw, 10px);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.82);
+  font-family: var(--primary-font-family);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-height: 130px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+}
+
+/* Store label at bottom */
+.spineBottomBadge {
+  flex-shrink: 0;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.spineStoreLabel {
+  font-size: 5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.22);
+  font-family: var(--primary-font-family);
+}
+
+/* Floor darkening */
+.consoleStage::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 20px;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.9));
+  pointer-events: none;
+  z-index: 11;
+}
+
+/* Top bar styling */
+.consoleTopBar {
+  background: rgba(5,3,0,0.65);
+  border-bottom: 1px solid rgba(255,180,60,0.07);
+}
+
+/* Footer */
+.consoleFooter {
+  background: rgba(5,3,0,0.5);
+  border-top: 1px solid rgba(255,180,60,0.05);
+}
+
+/* consoleFocusTitle override removed — replaced by dustyBoxTitle */
+
+/* ── Full-screen background ── */
+.dustySceneBg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(28px) brightness(0.22) saturate(0.6);
+  transform: scale(1.08);
+  z-index: 0;
+  pointer-events: none;
+  transition: background-image 0.4s ease;
+}
+
+/* ── Scene content layout ── */
+.dustySceneContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(24px, 4vw, 60px);
+  width: 100%;
+  height: 100%;
+  padding: 0 clamp(20px, 4vw, 60px);
+}
+
+/* Make consoleTitleBar a positioning context */
+.consoleTitleBar {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* ── Detail panel ── */
+.dustyDetailPanel {
+  flex: 1;
+  max-width: clamp(280px, 35vw, 480px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: detailSlideIn 0.3s ease forwards;
+}
+
+@keyframes detailSlideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.dustyDetailTitle {
+  font-size: clamp(1.1rem, 2vw, 1.8rem);
+  font-weight: 700;
+  color: #e8d5a0;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  margin: 0;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+}
+
+.dustyDetailDev {
+  font-size: clamp(0.7rem, 1vw, 0.9rem);
+  color: #c8a058;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.dustyDetailDesc {
+  font-size: clamp(0.75rem, 1.1vw, 0.92rem);
+  color: rgba(230, 215, 180, 0.78);
+  line-height: 1.55;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+}
+
+.dustyDetailDivider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(200,160,88,0.3), transparent);
+  margin: 4px 0;
+}
+
+.dustyDetailMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dustyDetailMetaLabel {
+  font-size: 0.65rem;
+  color: rgba(200,160,88,0.5);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.dustyDetailMetaValue {
+  font-size: 0.82rem;
+  color: rgba(230,215,180,0.85);
+  font-weight: 500;
+
+  &.installed {
+    color: #6db86d;
+  }
+  &.not-installed {
+    color: rgba(200,160,88,0.6);
+  }
+}
+
+.dustyDetailPath {
+  font-size: 0.7rem !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  opacity: 0.6;
+}
+
+.dustyDetailLaunchBtn {
+  margin-top: 8px;
+  padding: 10px 24px;
+  border: 1.5px solid rgba(200,160,88,0.5);
+  background: rgba(200,160,88,0.1);
+  color: #d4aa6a;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  font-family: var(--primary-font-family);
+
+  &:hover:not(:disabled) {
+    background: rgba(200,160,88,0.22);
+    border-color: rgba(200,160,88,0.85);
+    color: #f0cc80;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
   }
 }

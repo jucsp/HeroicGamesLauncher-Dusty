@@ -1,13 +1,9 @@
 import { forwardRef } from 'react'
 import classNames from 'classnames'
-import { useTranslation } from 'react-i18next'
 
-import { CachedImage } from 'frontend/components/UI'
 import { hasStatus } from 'frontend/hooks/hasStatus'
 import { hasProgress } from 'frontend/hooks/hasProgress'
 import { getProgress } from 'frontend/helpers'
-import { getImageFormatting } from 'frontend/screens/Library/components/GameCard/constants'
-import fallBackImage from 'frontend/assets/heroic_card.jpg'
 
 import type { GameInfo, Status } from 'common/types'
 
@@ -37,11 +33,18 @@ type Props = {
   onFocus: () => void
 }
 
+const STORE_META: Record<string, { label: string; color: string }> = {
+  legendary: { label: 'EPIC',    color: '#2d2d2d' },
+  gog:       { label: 'GOG',     color: '#86328a' },
+  nile:      { label: 'AMAZON',  color: '#ff9900' },
+  zoom:      { label: 'ZOOM',    color: '#0070f3' },
+  sideload:  { label: 'CUSTOM',  color: '#555555' },
+}
+
 const ConsoleCard = forwardRef<HTMLButtonElement, Props>(function ConsoleCard(
   { game, focused, needsUpdate, onClick, onMouseEnter, onFocus },
   ref
 ) {
-  const { t } = useTranslation()
   const { status, label } = hasStatus(game)
   const [progress] = hasProgress(game.app_name, game.runner)
 
@@ -51,40 +54,73 @@ const ConsoleCard = forwardRef<HTMLButtonElement, Props>(function ConsoleCard(
     : null
   const showStatus = !!status && ACTIVE_STATUSES.has(status)
 
+  // Store metadata
+  const store = STORE_META[game.runner] ?? { label: 'PC', color: '#444' }
+  const accentColor = store.color
+
+  // Logo URL: use art_logo if available
+  const logoUrl = game.art_logo ?? null
+
   return (
     <button
       ref={ref}
-      className={classNames('consoleCard', {
-        focused,
-        progressing: isProgressing
-      })}
+      className={classNames('consoleCard', { focused, progressing: isProgressing })}
+      style={{ borderLeft: `3px solid ${accentColor}` }}
       tabIndex={focused ? 0 : -1}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onFocus={onFocus}
     >
-      <CachedImage
-        src={getImageFormatting(game.art_square, game.runner) || fallBackImage}
-        alt={game.title}
-        className="consoleCardArt"
-      />
-      {needsUpdate && !showStatus && (
-        <span className="consoleCardBadge">
-          {t('console.card.needsUpdate', 'Needs update')}
-        </span>
-      )}
+      {/* Left black plastic edge */}
+      <div className="spineEdge" />
+
+      {/* Main spine body */}
+      <div className="spineBody">
+
+        {/* Top: PC CD-ROM badge */}
+        <div className="spineTopBadge">
+          <span className="spineTopPC">PC</span>
+          <span className="spineTopMedia">CD-ROM</span>
+        </div>
+
+        {/* Center: logo or title — rotated sideways like real spine */}
+        <div className="spineCenterArea">
+          {logoUrl ? (
+            <div className="spineLogoWrap">
+              <img
+                src={logoUrl}
+                alt={game.title}
+                className="spineLogoImg"
+              />
+            </div>
+          ) : (
+            <span className="spineTitleText">
+              {game.overrides?.title || game.title}
+            </span>
+          )}
+        </div>
+
+        {/* Bottom: store label */}
+        <div className="spineBottomBadge">
+          <span className="spineStoreLabel">{store.label}</span>
+        </div>
+
+      </div>
+
+      {/* Status bar */}
       {showStatus && (
         <div className="consoleCardStatus">
           <span className="consoleCardStatusText">{label}</span>
           {isProgressing && (
             <div className="consoleCardProgress" aria-hidden>
-              <div
-                className="consoleCardProgressFill"
-                style={{ width: `${percent}%` }}
-              />
+              <div className="consoleCardProgressFill" style={{ width: `${percent}%` }} />
             </div>
           )}
         </div>
+      )}
+
+      {needsUpdate && !showStatus && (
+        <span className="consoleCardBadge">↑</span>
       )}
     </button>
   )

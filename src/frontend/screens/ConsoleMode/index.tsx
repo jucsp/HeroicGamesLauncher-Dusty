@@ -13,8 +13,9 @@ import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 
 import ContextProvider from 'frontend/state/ContextProvider'
-import { sendKill, updateGame } from 'frontend/helpers'
+import { getGameInfo, sendKill, updateGame } from 'frontend/helpers'
 import HeroicIcon from 'frontend/assets/heroic-icon.svg?react'
+import { CachedImage } from 'frontend/components/UI'
 
 import ConfirmDialog from './components/ConfirmDialog'
 import ConsoleCard from './components/ConsoleCard'
@@ -86,6 +87,7 @@ export default function ConsoleMode() {
   const [queuedNoticeGame, setQueuedNoticeGame] = useState<GameInfo | null>(
     null
   )
+  const [focusedGameInfo, setFocusedGameInfo] = useState<GameInfo | null>(null)
 
   const { connected: gamepadConnected, layout: controllerLayout } =
     useGamepadInfo()
@@ -149,6 +151,17 @@ export default function ConsoleMode() {
       return ascending ? cmp : -cmp
     })
   }, [allGames, filteringByInstalled, activeStore, ascending])
+
+  useEffect(() => {
+    const game = visibleGames[focusedIndex]
+    if (!game) {
+      setFocusedGameInfo(null)
+      return
+    }
+    getGameInfo(game.app_name, game.runner)
+      .then((info) => setFocusedGameInfo(info ?? game))
+      .catch(() => setFocusedGameInfo(game))
+  }, [focusedIndex, visibleGames])
 
   const storesWithGames = useMemo(() => {
     const set = new Set<Runner>()
@@ -347,19 +360,21 @@ export default function ConsoleMode() {
       e.stopPropagation()
       setFocusedIndex((i) => Math.max(i - 1, 0))
     } else if (e.key === 'ArrowDown') {
+      // Jump forward 5 spines (like page-right on a shelf)
       e.preventDefault()
       e.stopPropagation()
-      setFocusedIndex((i) => Math.min(i + columns, last))
+      setFocusedIndex((i) => Math.min(i + 5, last))
     } else if (e.key === 'ArrowUp') {
+      // Jump back 5 spines
       e.preventDefault()
       e.stopPropagation()
-      if (focusedIndex < columns) {
+      if (focusedIndex < 5) {
         const first = topBarRef.current?.querySelector<HTMLButtonElement>(
           'button:not(:disabled)'
         )
         first?.focus()
       } else {
-        setFocusedIndex((i) => Math.max(i - columns, 0))
+        setFocusedIndex((i) => Math.max(i - 5, 0))
       }
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
@@ -454,13 +469,137 @@ export default function ConsoleMode() {
         </div>
       </div>
 
-      <div className="consoleTitleBar">
-        {visibleGames[focusedIndex] && (
-          <h1 className="consoleFocusTitle">
-            {visibleGames[focusedIndex].title}
-          </h1>
-        )}
-      </div>
+  <div className="consoleTitleBar">
+    {visibleGames[focusedIndex] && (() => {
+      const game = visibleGames[focusedIndex]
+      const info = focusedGameInfo ?? game
+      const STORE_LABELS: Record<string, string> = {
+        legendary: 'EPIC GAMES', gog: 'GOG', nile: 'AMAZON GAMES',
+        zoom: 'ZOOM', sideload: 'CUSTOM',
+      }
+      const storeLabel = STORE_LABELS[game.runner] ?? 'PC'
+      const coverUrl = game.overrides?.art_square || game.art_square || game.art_cover || ''
+      const bgUrl = game.overrides?.art_cover || game.art_cover || game.art_square || ''
+
+      return (
+        <>
+          {/* Full screen blurred background */}
+          {bgUrl && (
+            <div
+              className="dustySceneBg"
+              key={`bg-${game.app_name}`}
+              style={{ backgroundImage: `url(${bgUrl})` }}
+            />
+          )}
+
+          {/* Content: box + detail side by side */}
+          <div className="dustySceneContent">
+
+            {/* LEFT: Box + Disc */}
+            <div className="dustyBoxDisplay">
+              <div className="dustyDiscWrap" key={`disc-${game.app_name}`}>
+                <div className="dustyDisc">
+                  <div className="dustyDiscSurface">
+                    <div className="dustyDiscTracks" />
+                    <div className="dustyDiscLabel">
+                      <CachedImage src={coverUrl} alt={game.title} className="dustyDiscLabelArt" />
+                      <div className="dustyDiscLabelOverlay" />
+                      <div className="dustyDiscHub" />
+                      <div className="dustyDiscHole" />
+                    </div>
+                    <div className="dustyDiscSheen" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="dustyBoxCase">
+                <div className="dustyBoxTopBar">
+                  <div className="dustyBoxPCBadge">
+                    <span className="dustyBoxPCMain">PC</span>
+                    <span className="dustyBoxPCLine">CD-ROM</span>
+                  </div>
+                  <span className="dustyBoxStoreLabel">{storeLabel}</span>
+                </div>
+                <div className="dustyBoxArtWrap">
+                  <CachedImage
+                    key={`art-${game.app_name}`}
+                    src={coverUrl}
+                    alt={game.title}
+                    className="dustyBoxArt"
+                  />
+                  <div className="dustyBoxSheen" />
+                  <div className="dustyBoxSpineEdge" />
+                </div>
+                <div className="dustyBoxBottom">
+                  <span className="dustyBoxTitle">
+                    {game.overrides?.title || game.title}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT: Detail panel */}
+            <div className="dustyDetailPanel" key={`detail-${game.app_name}`}>
+
+              {/* Title */}
+              <h2 className="dustyDetailTitle">
+                {game.overrides?.title || game.title}
+              </h2>
+
+              {/* Developer */}
+              {info.developer && (
+                <p className="dustyDetailDev">{info.developer}</p>
+              )}
+
+              {/* Description */}
+              {info.extra?.about?.shortDescription && (
+                <p className="dustyDetailDesc">
+                  {info.extra.about.shortDescription}
+                </p>
+              )}
+
+              {/* Divider */}
+              <div className="dustyDetailDivider" />
+
+              {/* Install status */}
+              <div className="dustyDetailMeta">
+                <span className="dustyDetailMetaLabel">
+                  {t('game.status', 'Status')}
+                </span>
+                <span className={`dustyDetailMetaValue ${game.is_installed ? 'installed' : 'not-installed'}`}>
+                  {game.is_installed
+                    ? t('status.installed', 'Installed')
+                    : t('game.notInstalled', 'Not installed')}
+                </span>
+              </div>
+
+              {/* Install path if installed */}
+              {game.is_installed && game.install?.install_path && (
+                <div className="dustyDetailMeta">
+                  <span className="dustyDetailMetaLabel">
+                    {t('game.installPath', 'Location')}
+                  </span>
+                  <span className="dustyDetailMetaValue dustyDetailPath" title={game.install.install_path}>
+                    {game.install.install_path}
+                  </span>
+                </div>
+              )}
+
+              {/* Launch button */}
+              <button
+                className="dustyDetailLaunchBtn"
+                onClick={() => activateGame(game)}
+                disabled={!idle}
+              >
+                {game.is_installed ? `▶ ${t('label.playing.start', 'Play')}` : `↓ ${t('game.install', 'Install')}`}
+              </button>
+
+            </div>
+          </div>
+        </>
+      )
+    })()}
+  </div>
 
       <div className="consoleStage">
         {visibleGames.length === 0 ? (

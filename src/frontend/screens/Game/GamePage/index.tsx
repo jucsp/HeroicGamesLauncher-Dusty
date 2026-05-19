@@ -223,7 +223,12 @@ export default React.memo(function GamePage(): JSX.Element | null {
           getInstallInfo(appName, runner, installPlatform)
             .then((info) => {
               if (!info) {
-                throw new Error('Cannot get game info')
+                console.warn(
+                  '[Dusty] Could not get game info for',
+                  appName,
+                  runner
+                )
+                return
               }
               if (
                 info.manifest &&
