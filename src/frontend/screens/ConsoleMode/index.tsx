@@ -29,7 +29,7 @@ import {
   getActionButtonLabel,
   getBackButtonLabel
 } from './controller'
-import { useColumnCount, useGamepadButtonPress, useGamepadInfo } from './hooks'
+import { useGamepadButtonPress, useGamepadInfo } from './hooks'
 
 import type { TFunction } from 'i18next'
 import type { GameInfo, Runner } from 'common/types'
@@ -205,8 +205,6 @@ export default function ConsoleMode() {
       setActiveStore('all')
     }
   }, [enabledStoreKeys, activeStore])
-
-  const columns = useColumnCount(cardRefs, visibleGames.length)
 
   useEffect(() => {
     // always make sane focused index
