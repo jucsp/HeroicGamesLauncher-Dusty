@@ -34,11 +34,11 @@ type Props = {
 }
 
 const STORE_META: Record<string, { label: string; color: string }> = {
-  legendary: { label: 'EPIC',    color: '#2d2d2d' },
-  gog:       { label: 'GOG',     color: '#86328a' },
-  nile:      { label: 'AMAZON',  color: '#ff9900' },
-  zoom:      { label: 'ZOOM',    color: '#0070f3' },
-  sideload:  { label: 'CUSTOM',  color: '#555555' },
+  legendary: { label: 'EPIC', color: '#2d2d2d' },
+  gog: { label: 'GOG', color: '#86328a' },
+  nile: { label: 'AMAZON', color: '#ff9900' },
+  zoom: { label: 'ZOOM', color: '#0070f3' },
+  sideload: { label: 'CUSTOM', color: '#555555' }
 }
 
 const ConsoleCard = forwardRef<HTMLButtonElement, Props>(function ConsoleCard(
@@ -64,7 +64,10 @@ const ConsoleCard = forwardRef<HTMLButtonElement, Props>(function ConsoleCard(
   return (
     <button
       ref={ref}
-      className={classNames('consoleCard', { focused, progressing: isProgressing })}
+      className={classNames('consoleCard', {
+        focused,
+        progressing: isProgressing
+      })}
       style={{ borderLeft: `3px solid ${accentColor}` }}
       tabIndex={focused ? 0 : -1}
       onClick={onClick}
@@ -76,7 +79,6 @@ const ConsoleCard = forwardRef<HTMLButtonElement, Props>(function ConsoleCard(
 
       {/* Main spine body */}
       <div className="spineBody">
-
         {/* Top: PC CD-ROM badge */}
         <div className="spineTopBadge">
           <span className="spineTopPC">PC</span>
@@ -87,11 +89,7 @@ const ConsoleCard = forwardRef<HTMLButtonElement, Props>(function ConsoleCard(
         <div className="spineCenterArea">
           {logoUrl ? (
             <div className="spineLogoWrap">
-              <img
-                src={logoUrl}
-                alt={game.title}
-                className="spineLogoImg"
-              />
+              <img src={logoUrl} alt={game.title} className="spineLogoImg" />
             </div>
           ) : (
             <span className="spineTitleText">
@@ -104,7 +102,6 @@ const ConsoleCard = forwardRef<HTMLButtonElement, Props>(function ConsoleCard(
         <div className="spineBottomBadge">
           <span className="spineStoreLabel">{store.label}</span>
         </div>
-
       </div>
 
       {/* Status bar */}
@@ -113,7 +110,10 @@ const ConsoleCard = forwardRef<HTMLButtonElement, Props>(function ConsoleCard(
           <span className="consoleCardStatusText">{label}</span>
           {isProgressing && (
             <div className="consoleCardProgress" aria-hidden>
-              <div className="consoleCardProgressFill" style={{ width: `${percent}%` }} />
+              <div
+                className="consoleCardProgressFill"
+                style={{ width: `${percent}%` }}
+              />
             </div>
           )}
         </div>

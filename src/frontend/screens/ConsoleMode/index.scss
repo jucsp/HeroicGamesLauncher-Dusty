@@ -489,10 +489,18 @@
   grid-template-rows: auto 1fr auto auto !important;
 
   background:
-    radial-gradient(ellipse 35vw 55vh at 68% 0%, rgba(255,185,60,0.28) 0%, rgba(220,140,30,0.12) 35%, transparent 65%),
-    repeating-linear-gradient(175deg,
-      rgba(60,30,5,0) 0px, rgba(60,30,5,0) 8px,
-      rgba(40,20,3,0.1) 8px, rgba(40,20,3,0.1) 9px
+    radial-gradient(
+      ellipse 35vw 55vh at 68% 0%,
+      rgba(255, 185, 60, 0.28) 0%,
+      rgba(220, 140, 30, 0.12) 35%,
+      transparent 65%
+    ),
+    repeating-linear-gradient(
+      175deg,
+      rgba(60, 30, 5, 0) 0px,
+      rgba(60, 30, 5, 0) 8px,
+      rgba(40, 20, 3, 0.1) 8px,
+      rgba(40, 20, 3, 0.1) 9px
     ),
     linear-gradient(180deg, #1a0d03 0%, #120900 40%, #0c0600 100%);
 }
@@ -539,14 +547,20 @@
   width: clamp(200px, 30vh, 340px);
   height: clamp(200px, 30vh, 340px);
   border-radius: 50%;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.5);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(0, 0, 0, 0.5);
   animation: discSpin 8s linear infinite;
   position: relative;
 }
 
 @keyframes discSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .dustyDiscSurface {
@@ -555,10 +569,18 @@
   border-radius: 50%;
   background: conic-gradient(
     from 0deg,
-    #2a2a3a 0deg, #d4a030 20deg, #6a6a8a 50deg,
-    #e8c060 80deg, #3a3a4a 110deg, #c09030 140deg,
-    #2a2a3a 180deg, #d4a030 200deg, #6a6a8a 230deg,
-    #e8c060 260deg, #3a3a4a 290deg, #c09030 320deg,
+    #2a2a3a 0deg,
+    #d4a030 20deg,
+    #6a6a8a 50deg,
+    #e8c060 80deg,
+    #3a3a4a 110deg,
+    #c09030 140deg,
+    #2a2a3a 180deg,
+    #d4a030 200deg,
+    #6a6a8a 230deg,
+    #e8c060 260deg,
+    #3a3a4a 290deg,
+    #c09030 320deg,
     #2a2a3a 360deg
   );
   position: relative;
@@ -571,8 +593,10 @@
   border-radius: 50%;
   background: repeating-radial-gradient(
     circle at center,
-    transparent 0px, transparent 3px,
-    rgba(0,0,0,0.15) 4px, transparent 5px
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.15) 4px,
+    transparent 5px
   );
   mix-blend-mode: overlay;
 }
@@ -580,13 +604,16 @@
 /* Circular label in center */
 .dustyDiscLabel {
   position: absolute;
-  top: 50%; left: 50%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
   width: 52%;
   height: 52%;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow: inset 0 0 8px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.3);
+  box-shadow:
+    inset 0 0 8px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 0, 0, 0.3);
 }
 
 .dustyDiscLabelArt {
@@ -603,29 +630,33 @@
   border-radius: 50%;
   background: radial-gradient(
     circle at 35% 35%,
-    rgba(255,240,200,0.25) 0%,
+    rgba(255, 240, 200, 0.25) 0%,
     transparent 60%
   );
 }
 
 .dustyDiscHub {
   position: absolute;
-  top: 50%; left: 50%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  width: 30%; height: 30%;
+  width: 30%;
+  height: 30%;
   border-radius: 50%;
   background: radial-gradient(circle, #2a2a2a 0%, #111 100%);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .dustyDiscHole {
   position: absolute;
-  top: 50%; left: 50%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  width: 12%; height: 12%;
+  width: 12%;
+  height: 12%;
   border-radius: 50%;
   background: #000;
-  box-shadow: inset 0 0 4px rgba(255,180,80,0.3);
+  box-shadow: inset 0 0 4px rgba(255, 180, 80, 0.3);
 }
 
 .dustyDiscSheen {
@@ -634,8 +665,8 @@
   border-radius: 50%;
   background: radial-gradient(
     ellipse at 30% 20%,
-    rgba(255,240,200,0.45) 0%,
-    rgba(255,220,160,0.2) 20%,
+    rgba(255, 240, 200, 0.45) 0%,
+    rgba(255, 220, 160, 0.2) 20%,
     transparent 55%
   );
   mix-blend-mode: screen;
@@ -654,10 +685,10 @@
   border-radius: 3px;
   overflow: hidden;
   box-shadow:
-    0 24px 70px rgba(0,0,0,0.9),
-    0 0 0 1px rgba(255,255,255,0.06),
-    6px 0 12px rgba(0,0,0,0.6),
-    -2px 0 4px rgba(0,0,0,0.8);
+    0 24px 70px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    6px 0 12px rgba(0, 0, 0, 0.6),
+    -2px 0 4px rgba(0, 0, 0, 0.8);
   background: #111;
   /* No animation on the box itself */
 }
@@ -671,8 +702,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 8px;
-  background: rgba(0,0,0,0.6);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0, 0, 0, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   z-index: 2;
 }
 
@@ -685,14 +716,14 @@
 .dustyBoxPCMain {
   font-size: 9px;
   font-weight: 900;
-  color: rgba(255,255,255,0.9);
+  color: rgba(255, 255, 255, 0.9);
   letter-spacing: 1px;
   font-family: var(--primary-font-family);
 }
 
 .dustyBoxPCLine {
   font-size: 6px;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   letter-spacing: 0.5px;
   font-family: var(--primary-font-family);
 }
@@ -702,7 +733,7 @@
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   font-family: var(--primary-font-family);
 }
 
@@ -721,29 +752,36 @@
 }
 
 @keyframes artFadeIn {
-  from { opacity: 0.4; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .dustyBoxSheen {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(135deg,
-      rgba(255,255,255,0.14) 0%,
-      transparent 35%,
-      rgba(0,0,0,0.08) 100%
-    );
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    transparent 35%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
   pointer-events: none;
 }
 
 .dustyBoxSpineEdge {
   position: absolute;
-  top: 0; bottom: 0; left: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
   width: 12px;
-  background: linear-gradient(to right,
-    rgba(0,0,0,0.55) 0%,
-    rgba(0,0,0,0.15) 60%,
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.15) 60%,
     transparent 100%
   );
   pointer-events: none;
@@ -752,11 +790,11 @@
 .dustyBoxBottom {
   height: 26px;
   flex-shrink: 0;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   padding: 0 10px;
-  border-top: 1px solid rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .dustyBoxTitle {
@@ -800,17 +838,21 @@
   content: '';
   position: absolute;
   bottom: 18px;
-  left: 0; right: 0;
+  left: 0;
+  right: 0;
   height: 22px;
   background:
-    repeating-linear-gradient(90deg,
-      rgba(120,65,15,0) 0px, rgba(120,65,15,0) 40px,
-      rgba(80,40,8,0.3) 40px, rgba(80,40,8,0.3) 41px
+    repeating-linear-gradient(
+      90deg,
+      rgba(120, 65, 15, 0) 0px,
+      rgba(120, 65, 15, 0) 40px,
+      rgba(80, 40, 8, 0.3) 40px,
+      rgba(80, 40, 8, 0.3) 41px
     ),
     linear-gradient(180deg, #8a5020 0%, #5a3010 40%, #3a1e08 100%);
   box-shadow:
-    0 -1px 0 rgba(200,120,40,0.25) inset,
-    0 6px 24px rgba(0,0,0,0.9);
+    0 -1px 0 rgba(200, 120, 40, 0.25) inset,
+    0 6px 24px rgba(0, 0, 0, 0.9);
   z-index: 10;
   pointer-events: none;
 }
@@ -826,12 +868,12 @@
   flex-shrink: 0;
   filter: brightness(0.65) saturate(0.7);
   transition:
-    transform 0.22s cubic-bezier(.22,.68,0,1.2),
+    transform 0.22s cubic-bezier(0.22, 0.68, 0, 1.2),
     filter 0.18s ease,
     box-shadow 0.18s ease !important;
 
   &:hover {
-    filter: brightness(1.0) saturate(0.9) !important;
+    filter: brightness(1) saturate(0.9) !important;
     transform: translateY(-6px);
     z-index: 3;
   }
@@ -840,9 +882,9 @@
     transform: translateY(-18px) !important;
     filter: brightness(1.25) saturate(1.1) !important;
     box-shadow:
-      0 18px 40px rgba(0,0,0,0.85),
-      0 0 0 1px rgba(255,200,100,0.5),
-      0 0 20px rgba(255,180,60,0.25) !important;
+      0 18px 40px rgba(0, 0, 0, 0.85),
+      0 0 0 1px rgba(255, 200, 100, 0.5),
+      0 0 20px rgba(255, 180, 60, 0.25) !important;
     z-index: 5;
   }
 }
@@ -879,7 +921,7 @@
 .spineTopPC {
   font-size: 8px;
   font-weight: 900;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   letter-spacing: 1px;
   font-family: var(--primary-font-family);
   line-height: 1;
@@ -887,7 +929,7 @@
 
 .spineTopMedia {
   font-size: 5px;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
   letter-spacing: 0.5px;
   font-family: var(--primary-font-family);
   line-height: 1;
@@ -929,13 +971,13 @@
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.82);
+  color: rgba(255, 255, 255, 0.82);
   font-family: var(--primary-font-family);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   max-height: 130px;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 /* Store label at bottom */
@@ -950,7 +992,7 @@
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.22);
+  color: rgba(255, 255, 255, 0.22);
   font-family: var(--primary-font-family);
 }
 
@@ -958,23 +1000,25 @@
 .consoleStage::after {
   content: '';
   position: absolute;
-  bottom: 0; left: 0; right: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   height: 20px;
-  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.9));
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.9));
   pointer-events: none;
   z-index: 11;
 }
 
 /* Top bar styling */
 .consoleTopBar {
-  background: rgba(5,3,0,0.65);
-  border-bottom: 1px solid rgba(255,180,60,0.07);
+  background: rgba(5, 3, 0, 0.65);
+  border-bottom: 1px solid rgba(255, 180, 60, 0.07);
 }
 
 /* Footer */
 .consoleFooter {
-  background: rgba(5,3,0,0.5);
-  border-top: 1px solid rgba(255,180,60,0.05);
+  background: rgba(5, 3, 0, 0.5);
+  border-top: 1px solid rgba(255, 180, 60, 0.05);
 }
 
 /* consoleFocusTitle override removed — replaced by dustyBoxTitle */
@@ -1023,8 +1067,14 @@
 }
 
 @keyframes detailSlideIn {
-  from { opacity: 0; transform: translateX(20px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .dustyDetailTitle {
@@ -1034,7 +1084,7 @@
   letter-spacing: 0.04em;
   line-height: 1.2;
   margin: 0;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
 }
 
 .dustyDetailDev {
@@ -1055,12 +1105,17 @@
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
 }
 
 .dustyDetailDivider {
   height: 1px;
-  background: linear-gradient(to right, transparent, rgba(200,160,88,0.3), transparent);
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(200, 160, 88, 0.3),
+    transparent
+  );
   margin: 4px 0;
 }
 
@@ -1072,7 +1127,7 @@
 
 .dustyDetailMetaLabel {
   font-size: 0.65rem;
-  color: rgba(200,160,88,0.5);
+  color: rgba(200, 160, 88, 0.5);
   letter-spacing: 0.15em;
   text-transform: uppercase;
   font-weight: 600;
@@ -1080,14 +1135,14 @@
 
 .dustyDetailMetaValue {
   font-size: 0.82rem;
-  color: rgba(230,215,180,0.85);
+  color: rgba(230, 215, 180, 0.85);
   font-weight: 500;
 
   &.installed {
     color: #6db86d;
   }
   &.not-installed {
-    color: rgba(200,160,88,0.6);
+    color: rgba(200, 160, 88, 0.6);
   }
 }
 
@@ -1103,8 +1158,8 @@
 .dustyDetailLaunchBtn {
   margin-top: 8px;
   padding: 10px 24px;
-  border: 1.5px solid rgba(200,160,88,0.5);
-  background: rgba(200,160,88,0.1);
+  border: 1.5px solid rgba(200, 160, 88, 0.5);
+  background: rgba(200, 160, 88, 0.1);
   color: #d4aa6a;
   font-size: 0.9rem;
   font-weight: 700;
@@ -1113,12 +1168,15 @@
   border-radius: 2px;
   cursor: pointer;
   align-self: flex-start;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s;
   font-family: var(--primary-font-family);
 
   &:hover:not(:disabled) {
-    background: rgba(200,160,88,0.22);
-    border-color: rgba(200,160,88,0.85);
+    background: rgba(200, 160, 88, 0.22);
+    border-color: rgba(200, 160, 88, 0.85);
     color: #f0cc80;
   }
 
