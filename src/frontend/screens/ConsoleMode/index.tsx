@@ -14,8 +14,8 @@ import classNames from 'classnames'
 
 import ContextProvider from 'frontend/state/ContextProvider'
 import { getGameInfo, sendKill, updateGame } from 'frontend/helpers'
-import HeroicIcon    from 'frontend/assets/heroic-icon.svg?react'
-import bgAsset       from 'frontend/assets/dusty/background.png'
+import HeroicIcon from 'frontend/assets/heroic-icon.svg?react'
+import bgAsset from 'frontend/assets/dusty/background.png'
 import { CachedImage } from 'frontend/components/UI'
 
 import ConfirmDialog from './components/ConfirmDialog'
@@ -614,7 +614,10 @@ export default function ConsoleMode() {
       </div>
 
       {/* Área shelf/lomos — bg coords: x=77, y=979, w=2608, h=448 */}
-      <div className="dustyShelfArea" style={scaledPosition(77, 979, 2608, 448)}>
+      <div
+        className="dustyShelfArea"
+        style={scaledPosition(77, 979, 2608, 448)}
+      >
         {visibleGames.length === 0 ? (
           <div className="consoleEmpty">
             {refreshing

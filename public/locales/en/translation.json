@@ -409,7 +409,6 @@
     "favourites": "Favourites",
     "game": {
         "install": "Install",
-        "installPath": "Location",
         "modify": "Modify Installation",
         "notInstalled": "Not installed",
         "status": "Status",
