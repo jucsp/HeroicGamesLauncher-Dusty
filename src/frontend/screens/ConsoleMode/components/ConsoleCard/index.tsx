@@ -1,28 +1,27 @@
 import { forwardRef } from 'react'
 import classNames from 'classnames'
-
 import { hasStatus } from 'frontend/hooks/hasStatus'
 import { hasProgress } from 'frontend/hooks/hasProgress'
 import { getProgress } from 'frontend/helpers'
-
+import { getImageFormatting } from 'frontend/screens/Library/components/GameCard/constants'
+import fallBackImage from 'frontend/assets/heroic_card.jpg'
+import pcVertical from 'frontend/assets/dusty/PC_CD-ROM_vertical.png'
+import esrbTeen   from 'frontend/assets/dusty/ESRB_Teen.png'
 import type { GameInfo, Status } from 'common/types'
 
-// Statuses that we surface as an overlay on the card. Anything outside this set
-// (e.g. `installed`, `notInstalled`, `done`) is treated as idle.
 const ACTIVE_STATUSES = new Set<Status>([
-  'installing',
-  'updating',
-  'queued',
-  'launching',
-  'playing',
-  'uninstalling',
-  'moving',
-  'repairing',
-  'syncing-saves',
-  'extracting',
-  'redist',
-  'winetricks'
+  'installing','updating','queued','launching','playing',
+  'uninstalling','moving','repairing','syncing-saves',
+  'extracting','redist','winetricks'
 ])
+
+const STORE_META: Record<string, { label: string; color: string }> = {
+  legendary: { label: 'EPIC',   color: '#2a2a3a' },
+  gog:       { label: 'GOG',    color: '#450055' },
+  nile:      { label: 'AMAZON', color: '#4a2800' },
+  zoom:      { label: 'ZOOM',   color: '#002855' },
+  sideload:  { label: 'PC',     color: '#1a1a1a' },
+}
 
 type Props = {
   game: GameInfo
@@ -33,97 +32,110 @@ type Props = {
   onFocus: () => void
 }
 
-const STORE_META: Record<string, { label: string; color: string }> = {
-  legendary: { label: 'EPIC', color: '#2d2d2d' },
-  gog: { label: 'GOG', color: '#86328a' },
-  nile: { label: 'AMAZON', color: '#ff9900' },
-  zoom: { label: 'ZOOM', color: '#0070f3' },
-  sideload: { label: 'CUSTOM', color: '#555555' }
-}
+const ConsoleCard = forwardRef<HTMLButtonElement, Props>(
+  function ConsoleCard(
+    { game, focused, needsUpdate, onClick, onMouseEnter, onFocus },
+    ref
+  ) {
+    const { status, label } = hasStatus(game)
+    const [progress] = hasProgress(game.app_name, game.runner)
 
-const ConsoleCard = forwardRef<HTMLButtonElement, Props>(function ConsoleCard(
-  { game, focused, needsUpdate, onClick, onMouseEnter, onFocus },
-  ref
-) {
-  const { status, label } = hasStatus(game)
-  const [progress] = hasProgress(game.app_name, game.runner)
+    const isProgressing = status === 'installing' || status === 'updating'
+    const percent = isProgressing
+      ? Math.max(0, Math.min(100, Math.round(getProgress(progress))))
+      : null
+    const showStatus = !!status && ACTIVE_STATUSES.has(status)
 
-  const isProgressing = status === 'installing' || status === 'updating'
-  const percent = isProgressing
-    ? Math.max(0, Math.min(100, Math.round(getProgress(progress))))
-    : null
-  const showStatus = !!status && ACTIVE_STATUSES.has(status)
+    const store = STORE_META[game.runner] ?? { label: 'PC', color: '#111' }
+    const logoUrl = game.art_logo ?? null
 
-  // Store metadata
-  const store = STORE_META[game.runner] ?? { label: 'PC', color: '#444' }
-  const accentColor = store.color
+    const artUrl = getImageFormatting(game.art_square, game.runner)
+      || game.art_cover
+      || fallBackImage
 
-  // Logo URL: use art_logo if available
-  const logoUrl = game.art_logo ?? null
+    return (
+      <button
+        ref={ref}
+        className={classNames('consoleCard', {
+          focused,
+          progressing: isProgressing
+        })}
+        tabIndex={focused ? 0 : -1}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onFocus={onFocus}
+      >
+        {/* Blurred art background */}
+        <div
+          className="spineArtBg"
+          style={{ backgroundImage: `url(${artUrl})` }}
+        />
 
-  return (
-    <button
-      ref={ref}
-      className={classNames('consoleCard', {
-        focused,
-        progressing: isProgressing
-      })}
-      style={{ borderLeft: `3px solid ${accentColor}` }}
-      tabIndex={focused ? 0 : -1}
-      onClick={onClick}
-      onMouseEnter={onMouseEnter}
-      onFocus={onFocus}
-    >
-      {/* Left black plastic edge */}
-      <div className="spineEdge" />
+        {/* Left accent stripe */}
+        <div
+          className="spineStripe"
+          style={{ background: store.color }}
+        />
 
-      {/* Main spine body */}
-      <div className="spineBody">
-        {/* Top: PC CD-ROM badge */}
-        <div className="spineTopBadge">
-          <span className="spineTopPC">PC</span>
-          <span className="spineTopMedia">CD-ROM</span>
-        </div>
+        {/* Overlay content */}
+        <div className="spineContent">
 
-        {/* Center: logo or title — rotated sideways like real spine */}
-        <div className="spineCenterArea">
-          {logoUrl ? (
-            <div className="spineLogoWrap">
-              <img src={logoUrl} alt={game.title} className="spineLogoImg" />
-            </div>
-          ) : (
-            <span className="spineTitleText">
-              {game.overrides?.title || game.title}
-            </span>
-          )}
-        </div>
+          {/* PC CD-ROM logo at top */}
+          <div className="spinePCWrap">
+            <img
+              src={pcVertical}
+              alt="PC CD-ROM"
+              className="spinePCLogo"
+            />
+          </div>
 
-        {/* Bottom: store label */}
-        <div className="spineBottomBadge">
-          <span className="spineStoreLabel">{store.label}</span>
-        </div>
-      </div>
-
-      {/* Status bar */}
-      {showStatus && (
-        <div className="consoleCardStatus">
-          <span className="consoleCardStatusText">{label}</span>
-          {isProgressing && (
-            <div className="consoleCardProgress" aria-hidden>
-              <div
-                className="consoleCardProgressFill"
-                style={{ width: `${percent}%` }}
+          {/* Game title or logo in center */}
+          <div className="spineTitleWrap">
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt={game.title}
+                className="spineLogoImg"
               />
-            </div>
-          )}
-        </div>
-      )}
+            ) : (
+              <span className="spineTitleText">
+                {game.overrides?.title || game.title}
+              </span>
+            )}
+          </div>
 
-      {needsUpdate && !showStatus && (
-        <span className="consoleCardBadge">↑</span>
-      )}
-    </button>
-  )
-})
+          {/* ESRB badge at bottom */}
+          <div className="spineESRBWrap">
+            <img
+              src={esrbTeen}
+              alt="ESRB Teen"
+              className="spineESRBLogo"
+            />
+          </div>
+
+        </div>
+
+        {/* Status overlay */}
+        {showStatus && (
+          <div className="consoleCardStatus">
+            <span className="consoleCardStatusText">{label}</span>
+            {isProgressing && percent !== null && (
+              <div className="consoleCardProgress" aria-hidden>
+                <div
+                  className="consoleCardProgressFill"
+                  style={{ width: `${percent}%` }}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {needsUpdate && !showStatus && (
+          <span className="consoleCardBadge">↑</span>
+        )}
+      </button>
+    )
+  }
+)
 
 export default ConsoleCard

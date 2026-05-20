@@ -1,0 +1,17 @@
+
+  useEffect(() => {
+    const center = document.getElementById('shelfCenter')
+    if (!center) return
+    const slotW = 62
+    const imgTag = (src: string) =>
+      `<img src="${src}" style="height:100%;width:auto;flex-shrink:0;display:block;object-fit:fill;" alt="" />`
+    const fill = () => {
+      const count = Math.ceil((window.innerWidth / slotW)) + 2
+      center.innerHTML = Array(count)
+        .fill(imgTag(libMid))
+        .join('')
+    }
+    fill()
+    window.addEventListener('resize', fill)
+    return () => window.removeEventListener('resize', fill)
+  }, [])

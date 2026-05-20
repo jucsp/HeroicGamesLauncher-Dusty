@@ -1,0 +1,100 @@
+/* ── SHELF with library asset background ── */
+.consoleStage {
+  position: relative;
+}
+
+.dustyShelfBg {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  /* wider than viewport so edges go off-screen */
+  width: max-content;
+  height: var(--spine-height);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  z-index: 0;
+  pointer-events: none;
+  /* overflow visible so edge pieces go off-screen naturally */
+}
+
+.shelf-bg-edge {
+  height: 100%;
+  width: auto;
+  object-fit: fill;
+  flex-shrink: 0;
+  display: block;
+}
+
+.shelf-bg-center {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+/* Game spines sit inside slots at fixed width */
+.consoleGrid {
+  position: relative;
+  z-index: 2;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-end !important;
+  justify-content: flex-start !important;
+  gap: 0 !important;
+  grid-template-columns: unset !important;
+  padding: 0 !important;
+  height: var(--spine-height);
+  min-height: var(--spine-height);
+}
+
+.consoleGridScroller {
+  position: relative;
+  z-index: 2;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  padding: 0 !important;
+  /* Center the scroller so spines align with center slots */
+  justify-content: center;
+}
+
+.consoleCard {
+  /* Match the slot width from library_mid asset */
+  width: 62px !important;
+  height: calc(var(--spine-height) - 14px) !important;
+  aspect-ratio: unset !important;
+  border-radius: 1px 1px 0 0 !important;
+  overflow: hidden;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-shrink: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: brightness(0.65) saturate(0.7);
+  transition: transform 0.2s ease, filter 0.18s ease;
+}
+.consoleCard:hover {
+  filter: brightness(0.95) saturate(0.9);
+  transform: translateY(-8px);
+  z-index: 3;
+}
+.consoleCard.focused {
+  filter: brightness(1.2) saturate(1.1) !important;
+  transform: translateY(-16px) !important;
+  box-shadow: 0 14px 30px rgba(168, 85, 247, 0.3) !important;
+  z-index: 5;
+}
+
+/* Top/bottom bars and spineBody keep same styling */
+.consoleTopBar {
+  background: rgba(5, 3, 0, 0.7);
+  border-bottom: 1px solid rgba(255, 180, 60, 0.06);
+}
+.consoleFooter {
+  background: rgba(5, 3, 0, 0.5);
+  border-top: 1px solid rgba(255, 180, 60, 0.04);
+}
