@@ -50,6 +50,7 @@ export interface StoreStructure {
     settings: AppSettings
     skipVcRuntime: boolean
     showSnapWarning: boolean
+    consoleTheme: string
   }
   wineDownloaderInfoStore: {
     'wine-releases': WineVersionInfo[]

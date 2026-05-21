@@ -1,0 +1,975 @@
+/* ============================================================
+   DUSTY v3 — Vitrina Neonwave + TV + Wood Shelf
+   ============================================================ */
+
+.ConsoleMode {
+  --spine-width: clamp(40px, 4vw, 62px);
+  --spine-height: clamp(200px, 26vh, 300px);
+  grid-template-rows: auto 1fr auto auto !important;
+
+  /* Fondo oscuro base (detrás de la vitrina) */
+  background:
+    radial-gradient(ellipse 50vw 40vh at 50% 20%, rgba(120, 20, 180, 0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 40vw 30vh at 30% 60%, rgba(0, 200, 220, 0.10) 0%, transparent 70%),
+    linear-gradient(180deg, #0a0012 0%, #050010 40%, #080014 100%);
+}
+
+/* ═══════════════════════════════════════════════
+   VITRINA — Escena completa Neonwave
+   ═══════════════════════════════════════════════ */
+
+.consoleTitleBar {
+  position: relative !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  background: transparent !important;
+}
+
+.vitrinaScene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  img {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+}
+
+/* Capas de fondo — apiladas con z-index */
+.vitrinaBgBase {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+
+.vitrinaBgSky {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: auto;
+  max-height: 12%;
+  object-fit: contain;
+  object-position: top center;
+  z-index: 1;
+}
+
+.vitrinaBgFloor {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: auto;
+  max-height: 28%;
+  object-fit: contain;
+  object-position: bottom center;
+  z-index: 1;
+}
+
+.vitrinaBgLeft {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: auto;
+  max-width: 12%;
+  object-fit: contain;
+  object-position: left center;
+  z-index: 1;
+}
+
+.vitrinaBgRight {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: auto;
+  max-width: 12%;
+  object-fit: contain;
+  object-position: right center;
+  z-index: 1;
+}
+
+/* Figuras */
+.vitrinaFigOrc {
+  position: absolute;
+  left: clamp(2%, 4vw, 8%);
+  bottom: clamp(10%, 14vh, 22%);
+  width: clamp(100px, 16vw, 200px);
+  height: auto;
+  z-index: 2;
+  filter: drop-shadow(0 0 12px rgba(180, 40, 220, 0.5));
+}
+
+.vitrinaFigSw {
+  position: absolute;
+  right: clamp(4%, 6vw, 12%);
+  bottom: clamp(8%, 12vh, 20%);
+  width: clamp(60px, 9vw, 110px);
+  height: auto;
+  z-index: 2;
+  filter: drop-shadow(0 0 10px rgba(0, 200, 240, 0.45));
+}
+
+/* Joy / consola retro */
+.vitrinaJoy {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(4px, 1.5vh, 12px);
+  transform: translateX(-50%);
+  width: clamp(180px, 24vw, 320px);
+  height: auto;
+  z-index: 3;
+  filter: drop-shadow(0 0 18px rgba(200, 60, 200, 0.5))
+          drop-shadow(0 4px 16px rgba(0, 0, 0, 0.7));
+}
+
+/* Overlay de glow neón */
+.vitrinaNeonGlow {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 30% 50% at 25% 60%, rgba(200, 50, 220, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 25% 40% at 75% 55%, rgba(0, 210, 240, 0.10) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 50% 25%, rgba(120, 20, 200, 0.08) 0%, transparent 70%);
+  animation: neonPulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes neonPulse {
+  0%   { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════
+   CONTENIDO: Box+Disco + TV Panel
+   ═══════════════════════════════════════════════ */
+
+.vitrinaContent {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 3vw, 40px);
+  width: 100%;
+  height: 100%;
+  padding: clamp(8px, 2vh, 24px) clamp(16px, 3vw, 40px);
+}
+
+/* ── Box + Disc (conservado, ajustado) ── */
+
+.dustyBoxDisplay {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: titleFade 220ms ease;
+}
+
+.dustyDiscWrap {
+  position: absolute;
+  left: calc(50% + clamp(40px, 7vh, 80px));
+  top: 50%;
+  transform: translateY(-46%);
+  z-index: 1;
+  filter: brightness(0.88);
+}
+
+.dustyDisc {
+  width: clamp(140px, 22vh, 260px);
+  height: clamp(140px, 22vh, 260px);
+  border-radius: 50%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.5);
+  animation: discSpin 8s linear infinite;
+  position: relative;
+}
+
+@keyframes discSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.dustyDiscSurface {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #2a2a3a 0deg, #d4a030 20deg, #6a6a8a 50deg,
+    #e8c060 80deg, #3a3a4a 110deg, #c09030 140deg,
+    #2a2a3a 180deg, #d4a030 200deg, #6a6a8a 230deg,
+    #e8c060 260deg, #3a3a4a 290deg, #c09030 320deg,
+    #2a2a3a 360deg
+  );
+  position: relative;
+  overflow: hidden;
+}
+
+.dustyDiscTracks {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle at center,
+    transparent 0px, transparent 3px,
+    rgba(0,0,0,0.15) 4px, transparent 5px
+  );
+  mix-blend-mode: overlay;
+}
+
+.dustyDiscLabel {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52%;
+  height: 52%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.3);
+}
+
+.dustyDiscLabelArt {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: saturate(0.7) brightness(0.85);
+}
+
+.dustyDiscLabelOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(255,240,200,0.25) 0%,
+    transparent 60%
+  );
+}
+
+.dustyDiscHub {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30%; height: 30%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #2a2a2a 0%, #111 100%);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+.dustyDiscHole {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12%; height: 12%;
+  border-radius: 50%;
+  background: #000;
+  box-shadow: inset 0 0 4px rgba(255,180,80,0.3);
+}
+
+.dustyDiscSheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 30% 20%,
+    rgba(255,240,200,0.45) 0%,
+    rgba(255,220,160,0.2) 20%,
+    transparent 55%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Box */
+.dustyBoxCase {
+  position: relative;
+  z-index: 2;
+  height: clamp(200px, 42vh, 380px);
+  aspect-ratio: 3 / 4;
+  display: flex;
+  flex-direction: column;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow:
+    0 24px 70px rgba(0,0,0,0.9),
+    0 0 0 1px rgba(255,255,255,0.06),
+    6px 0 12px rgba(0,0,0,0.6),
+    -2px 0 4px rgba(0,0,0,0.8);
+  background: #111;
+}
+
+.dustyBoxTopBar {
+  height: 26px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  background: rgba(0,0,0,0.6);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.dustyBoxPCBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.dustyBoxPCMain {
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #fff;
+}
+
+.dustyBoxPCLine {
+  font-size: 0.45rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+}
+
+.dustyBoxStoreLabel {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: rgba(200,160,88,0.8);
+  text-transform: uppercase;
+}
+
+.dustyBoxArtWrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.dustyBoxArt {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dustyBoxSheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.08) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(0,0,0,0.15) 100%
+  );
+  pointer-events: none;
+}
+
+.dustyBoxSpineEdge {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to left, rgba(0,0,0,0.6), transparent);
+  pointer-events: none;
+}
+
+.dustyBoxBottom {
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  background: rgba(0,0,0,0.7);
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.dustyBoxTitle {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.8);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ═══════════════════════════════════════════════
+   TV PANEL — Marco de TV retro + pantalla
+   ═══════════════════════════════════════════════ */
+
+.dustyTvPanel {
+  position: relative;
+  flex-shrink: 0;
+  width: clamp(280px, 36vw, 520px);
+  animation: detailSlideIn 0.3s ease forwards;
+}
+
+.dustyTvFrame {
+  display: block;
+  width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 20px rgba(150, 40, 200, 0.4))
+          drop-shadow(0 8px 30px rgba(0, 0, 0, 0.8));
+}
+
+/* Pantalla del TV — posicionada dentro del marco */
+.dustyTvScreen {
+  position: absolute;
+  /* Ajustar según la proporción real de tv_full.png */
+  /* tv_full: 794×774 → la pantalla ocupa ~58% ancho × ~52% alto */
+  top: 22%;
+  left: 19%;
+  width: 62%;
+  height: 50%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.8vh, 10px);
+  overflow: hidden;
+  padding: clamp(4px, 1vw, 12px);
+  /* Efecto scanlines CRT */
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.08) 0px,
+      rgba(0,0,0,0.08) 2px,
+      transparent 2px,
+      transparent 4px
+    ),
+    rgba(10, 8, 20, 0.55);
+  border-radius: 4px;
+  /* Glow interno de pantalla CRT */
+  box-shadow: inset 0 0 30px rgba(100, 180, 220, 0.15),
+              inset 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes detailSlideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Detalles dentro de la pantalla del TV */
+.dustyDetailTitle {
+  font-size: clamp(0.9rem, 1.6vw, 1.4rem);
+  font-weight: 700;
+  color: #c0f0ff;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  margin: 0;
+  text-shadow:
+    0 0 10px rgba(0, 200, 255, 0.5),
+    0 0 30px rgba(0, 160, 255, 0.3),
+    0 2px 8px rgba(0,0,0,0.9);
+  animation: crtFlicker 6s linear infinite;
+}
+
+@keyframes crtFlicker {
+  0%, 99.5%, 100% { opacity: 1; }
+  99.6%, 99.8% { opacity: 0.92; }
+}
+
+.dustyDetailDev {
+  font-size: clamp(0.6rem, 0.9vw, 0.78rem);
+  color: #80d0ff;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0;
+  opacity: 0.8;
+  text-shadow: 0 0 6px rgba(100, 200, 255, 0.4);
+}
+
+.dustyDetailDesc {
+  font-size: clamp(0.62rem, 0.9vw, 0.78rem);
+  color: rgba(180, 220, 240, 0.82);
+  line-height: 1.45;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+}
+
+.dustyDetailDivider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0, 200, 255, 0.35), transparent);
+  margin: 2px 0;
+}
+
+.dustyDetailMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.dustyDetailMetaLabel {
+  font-size: 0.55rem;
+  color: rgba(100, 200, 240, 0.55);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.dustyDetailMetaValue {
+  font-size: 0.7rem;
+  color: rgba(180, 220, 240, 0.85);
+  font-weight: 500;
+
+  &.installed {
+    color: #5cf5a0;
+    text-shadow: 0 0 8px rgba(80, 240, 140, 0.4);
+  }
+  &.not-installed {
+    color: rgba(200, 160, 88, 0.6);
+  }
+}
+
+.dustyDetailPath {
+  font-size: 0.6rem !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  opacity: 0.5;
+}
+
+.dustyDetailLaunchBtn {
+  margin-top: 4px;
+  padding: 6px 18px;
+  border: 1.5px solid rgba(0, 220, 255, 0.6);
+  background: rgba(0, 180, 220, 0.08);
+  color: #80e0ff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  font-family: var(--primary-font-family);
+  box-shadow: 0 0 8px rgba(0, 200, 255, 0.25);
+  text-shadow: 0 0 6px rgba(0, 200, 255, 0.3);
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 200, 240, 0.18);
+    border-color: rgba(0, 240, 255, 0.9);
+    color: #c0f0ff;
+    box-shadow: 0 0 16px rgba(0, 220, 255, 0.5),
+                0 0 30px rgba(0, 160, 240, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   ESTANTE DE MADERA (consoleStage)
+   ═══════════════════════════════════════════════ */
+
+.consoleStage {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.woodShelf {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+/* Fondo de madera */
+.woodShelfBg {
+  position: absolute;
+  inset: 0;
+  background: url('/assets/wood_background.png') repeat;
+  background-size: auto 100%;
+  z-index: 0;
+}
+
+/* Marco del estante — bordes de madera */
+.woodShelfTop,
+.woodShelfBottom,
+.woodShelfLeft,
+.woodShelfRight {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.woodShelfTop {
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: auto;
+  max-height: 10%;
+  object-fit: contain;
+  object-position: top center;
+}
+
+.woodShelfBottom {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: auto;
+  max-height: 8%;
+  object-fit: fill;
+  object-position: bottom center;
+}
+
+.woodShelfLeft {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: auto;
+  height: 100%;
+  max-width: 5%;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.woodShelfRight {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: auto;
+  height: 100%;
+  max-width: 5%;
+  object-fit: contain;
+  object-position: right center;
+}
+
+/* Scroll container — sobre el estante */
+.consoleGridScroller {
+  position: relative;
+  z-index: 3;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  outline: none;
+  scroll-padding-block: 20px;
+  padding: clamp(8px, 2vh, 20px) clamp(20px, 4vw, 48px);
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(60, 30, 5, 0.3);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(180, 120, 40, 0.4);
+    border-radius: 4px;
+  }
+}
+
+.consoleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--spine-width));
+  justify-content: center;
+  gap: clamp(4px, 0.6vw, 10px);
+  padding-block: 12px;
+}
+
+/* Compartimento individual */
+.shelfSlot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--spine-height);
+
+  /* Borde interior del compartimento */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border: 1px solid rgba(80, 30, 5, 0.4);
+    border-radius: 3px;
+    z-index: 1;
+    pointer-events: none;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.5),
+                0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  /* Fondo del compartimento: library image */
+  .shelfSlotBg {
+    position: absolute;
+    inset: 2px;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px);
+    object-fit: cover;
+    border-radius: 2px;
+    z-index: 0;
+    opacity: 0.9;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   CARDS (LOMOS) — Ajustadas para el estante
+   ═══════════════════════════════════════════════ */
+
+.consoleCard {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  transition:
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 180ms ease,
+    filter 180ms ease;
+  filter: saturate(0.85) brightness(0.9);
+
+  &:hover {
+    filter: none;
+  }
+
+  &.focused {
+    transform: scale(1.08) translateY(-4px);
+    filter: none;
+    z-index: 5;
+    box-shadow:
+      0 8px 28px rgba(0,0,0,0.7),
+      0 0 0 2px rgba(0, 220, 240, 0.7),
+      0 0 20px rgba(0, 200, 255, 0.5),
+      0 0 40px rgba(150, 40, 200, 0.35);
+  }
+}
+
+/* Spine interior */
+.spineEdge {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to right, #111, transparent);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.spineBody {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 30%),
+    linear-gradient(180deg, transparent 70%, rgba(0,0,0,0.2) 100%),
+    #1a1a22;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.spineTopBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 4px 2px;
+  line-height: 1;
+}
+
+.spineTopPC {
+  font-size: clamp(0.5rem, 0.7vw, 0.65rem);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #fff;
+}
+
+.spineTopMedia {
+  font-size: clamp(0.35rem, 0.45vw, 0.45rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+}
+
+.spineCenterArea {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  padding: 4px 2px;
+}
+
+.spineLogoWrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spineLogoImg {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: brightness(1.1);
+}
+
+.spineTitleText {
+  font-size: clamp(0.45rem, 0.65vw, 0.6rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(220,220,220,0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.spineBottomBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 4px 6px;
+}
+
+.spineStoreLabel {
+  font-size: clamp(0.4rem, 0.5vw, 0.5rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════
+   TOP BAR + FOOTER — Tonos oscuros coherentes
+   ═══════════════════════════════════════════════ */
+
+.consoleTopBar {
+  background: rgba(5, 2, 12, 0.7);
+  border-bottom: 1px solid rgba(150, 40, 200, 0.08);
+}
+
+.consoleFooter {
+  background: rgba(5, 2, 12, 0.55);
+  border-top: 1px solid rgba(150, 40, 200, 0.06);
+}
+
+/* Ajuste de chips para el tema neón */
+.consoleChip {
+  &.active {
+    border-color: rgba(180, 60, 220, 0.5) !important;
+    background: rgba(120, 30, 160, 0.25) !important;
+    box-shadow: 0 0 10px rgba(160, 40, 200, 0.25);
+  }
+
+  &:hover:not(.active) {
+    border-color: rgba(0, 200, 240, 0.4) !important;
+  }
+}
+
+/* Status bar en la card */
+.consoleCardStatus {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 4px 8px;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.85) 30%,
+    transparent 100%
+  );
+  color: var(--text-title, #fff);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.consoleCardStatusText {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.consoleCardProgress {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.15);
+  overflow: hidden;
+}
+
+.consoleCardProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #c040e0, #40c0f0);
+  border-radius: inherit;
+  transition: width 220ms ease;
+}
+
+.consoleCardBadge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #e040d0;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 700;
+  z-index: 5;
+  pointer-events: none;
+  box-shadow: 0 0 8px rgba(220, 60, 200, 0.5);
+}
+
+/* Empty state */
+.consoleEmpty {
+  font-size: 1.2rem;
+  color: rgba(180, 220, 240, 0.6);
+  text-align: center;
+  max-width: 60ch;
+  padding: 2rem;
+  margin: auto;
+  position: relative;
+  z-index: 3;
+}

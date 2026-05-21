@@ -200,7 +200,7 @@
   margin: auto;
 }
 
-.consoleGridScroller {
+.dustyGridScroller {
   flex: 1;
   min-height: 0;
   overflow-x: auto;
@@ -234,7 +234,7 @@
   padding-block: 16px;
 }
 
-.consoleCard {
+.dustyCard {
   position: relative;
   aspect-ratio: 3 / 4;
   border: none;
@@ -926,7 +926,7 @@
   }
 }
 /* ── GRID SCROLLER — fills dustyShelfArea ── */
-.consoleGridScroller {
+.dustyGridScroller {
   width: 100%;
   height: 100%;
   overflow-x: auto;
@@ -991,7 +991,7 @@
 /* ── SPINE CARDS ── */
 /* inner area of library_unit_v2: x=8,y=26 inside 82×448, inner=66×414 */
 /* left=8/82=9.8%, top=26/448=5.8%, right=8/82=9.8%, bottom=8/448=1.8% */
-.consoleCard {
+.dustyCard {
   position: absolute !important;
   top: 5.8% !important;
   left: 9.8% !important;
