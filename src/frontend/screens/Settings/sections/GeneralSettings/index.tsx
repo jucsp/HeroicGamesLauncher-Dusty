@@ -16,6 +16,7 @@ import {
   MinimizeOnGameLaunch,
   Shortcuts,
   StartInConsoleMode,
+  ConsoleModeThemeSelector,
   TraySettings,
   UseDarkTrayIcon,
   UseFramelessWindow,
@@ -50,6 +51,8 @@ export default function GeneralSettings() {
       <HideChangelogOnStartup />
 
       <StartInConsoleMode />
+
+      <ConsoleModeThemeSelector />
 
       <TraySettings />
 

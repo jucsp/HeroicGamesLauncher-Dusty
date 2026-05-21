@@ -1,0 +1,74 @@
+        {visibleGames.length === 0 ? (
+          <div className="consoleEmpty">
+            {refreshing
+              ? t('console.loading', 'Loading your library…')
+              : t(
+                  'console.empty',
+                  'No installed games to show. Install something first.'
+                )}
+          </div>
+        ) : (
+          <>
+            {/* Marco del estante de madera */}
+            <div className="woodShelf">
+              <img className="woodShelfTop" src="/assets/wood_up_short.png" alt="" />
+              <img className="woodShelfBottom" src="/assets/wood_down_long.png" alt="" />
+              <img className="woodShelfLeft" src="/assets/wood_left_side_long.png" alt="" />
+              <img className="woodShelfRight" src="/assets/wood_right_side_long.png" alt="" />
+
+              {/* Fondo de madera */}
+              <div className="woodShelfBg" />
+
+              {/* Compartimentos con juegos */}
+              <div
+                className="consoleGridScroller"
+                ref={gridRef}
+                role="listbox"
+                aria-label={t('console.games', 'Installed games')}
+                onKeyDown={onGridKeyDown}
+              >
+                <div className="consoleGrid">
+                  {visibleGames.map((game, i) => {
+                    const isFocused = i === focusedIndex
+                    return (
+                      <div
+                        className={classNames('shelfSlot', {
+                          'shelfSlotFirst': i === 0,
+                          'shelfSlotLast': i === visibleGames.length - 1,
+                        })}
+                        key={`${game.runner}-${game.app_name}`}
+                      >
+                        {/* Fondo del compartimento */}
+                        <img
+                          className="shelfSlotBg"
+                          src={
+                            i === 0
+                              ? '/assets/library_left_1.png'
+                              : i === visibleGames.length - 1
+                                ? '/assets/library_right_1.png'
+                                : '/assets/library_mid.png'
+                          }
+                          alt=""
+                        />
+                        <ConsoleCard
+                          ref={(el) => {
+                            cardRefs.current[i] = el
+                          }}
+                          game={game}
+                          focused={isFocused}
+                          needsUpdate={gameUpdates.includes(game.app_name)}
+                          onClick={() => {
+                            if (isFocused) activateGame(game)
+                            else setFocusedIndex(i)
+                          }}
+                          onMouseEnter={() => setFocusedIndex(i)}
+                          onFocus={() => setFocusedIndex(i)}
+                        />
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
