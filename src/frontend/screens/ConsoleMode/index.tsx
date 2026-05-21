@@ -623,7 +623,6 @@ export default function ConsoleMode() {
           (() => {
             const game = visibleGames[focusedIndex]
             const info = focusedGameInfo ?? game
-            const isLoadingInfo = focusedGameInfo === null
             const tsInfo = timestampStore.get_nodefault(game.app_name)
             const totalPlayed = tsInfo?.totalPlayed
               ? convertMinsToHrsMins(tsInfo.totalPlayed)
