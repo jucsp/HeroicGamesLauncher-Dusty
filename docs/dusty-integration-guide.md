@@ -49,16 +49,17 @@ No tiene dependencias hacia DustyMode.
 ### 3. DustyMode — el tema retro
 
 **Archivos:**
+
 - `src/frontend/screens/ConsoleMode/DustyMode.tsx` (820 líneas)
 - `src/frontend/screens/ConsoleMode/DustyMode.scss` (663 líneas)
 
 Layout de tres áreas apiladas verticalmente:
 
-| Área | Clase CSS | Descripción |
-|------|-----------|-------------|
-| TV / portada | `.dustyTVArea` | Muestra portada grande + metadatos del juego enfocado |
-| Disco | `.dustyDiscArea` | Reproductor de disco animado |
-| Estantería | `.dustyShelfArea` | Grid horizontal de juegos con imagen de mueble retro |
+| Área         | Clase CSS         | Descripción                                           |
+| ------------ | ----------------- | ----------------------------------------------------- |
+| TV / portada | `.dustyTVArea`    | Muestra portada grande + metadatos del juego enfocado |
+| Disco        | `.dustyDiscArea`  | Reproductor de disco animado                          |
+| Estantería   | `.dustyShelfArea` | Grid horizontal de juegos con imagen de mueble retro  |
 
 DustyMode importa `index.scss` para los estilos compartidos y `DustyMode.scss` para los suyos propios.
 
@@ -68,9 +69,9 @@ DustyMode importa `index.scss` para los estilos compartidos y `DustyMode.scss` p
 
 **Archivos:**
 
-| Archivo | Usa | Descripción |
-|---------|-----|-------------|
-| `components/ConsoleCard/index.tsx` | DustyMode | Card vertical estilo estuche de CD, con spine artwork |
+| Archivo                                  | Usa         | Descripción                                            |
+| ---------------------------------------- | ----------- | ------------------------------------------------------ |
+| `components/ConsoleCard/index.tsx`       | DustyMode   | Card vertical estilo estuche de CD, con spine artwork  |
 | `components/ConsoleCard/ClassicCard.tsx` | ClassicMode | Card simple con arte cuadrado y badge de actualización |
 
 Ambos comparten la misma interfaz `Props`:
@@ -91,7 +92,8 @@ type Props = {
 ### 5. Selector de tema en Settings
 
 **Archivos modificados:**
-- `src/frontend/screens/Settings/components/ConsoleModeThemeSelector.tsx` *(nuevo)*
+
+- `src/frontend/screens/Settings/components/ConsoleModeThemeSelector.tsx` _(nuevo)_
 - `src/frontend/screens/Settings/components/index.ts` — exporta el selector
 - `src/frontend/screens/Settings/sections/GeneralSettings/index.tsx` — lo monta en el formulario
 
@@ -123,11 +125,11 @@ Los estilos de `index.scss` son compartidos entre Classic y Dusty. Los cambios r
 
 ### 8. Otros cambios puntuales
 
-| Archivo | Cambio | Razón |
-|---------|--------|-------|
-| `src/backend/main_window.ts` | `webSecurity: false` | Permite cargar assets locales (PNG del tema) en desarrollo |
-| `src/frontend/screens/Game/GamePage/index.tsx` | `throw new Error` → `console.warn + return` | Evita crash cuando DustyMode navega a GamePage sin info completa |
-| `public/locales/en/translation.json` | `setting.console_theme`, `console.card.needsUpdate` | Claves i18n de los componentes nuevos |
+| Archivo                                        | Cambio                                              | Razón                                                            |
+| ---------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------- |
+| `src/backend/main_window.ts`                   | `webSecurity: false`                                | Permite cargar assets locales (PNG del tema) en desarrollo       |
+| `src/frontend/screens/Game/GamePage/index.tsx` | `throw new Error` → `console.warn + return`         | Evita crash cuando DustyMode navega a GamePage sin info completa |
+| `public/locales/en/translation.json`           | `setting.console_theme`, `console.card.needsUpdate` | Claves i18n de los componentes nuevos                            |
 
 ---
 
