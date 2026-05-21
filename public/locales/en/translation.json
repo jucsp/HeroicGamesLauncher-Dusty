@@ -233,6 +233,9 @@
             "message": "This game is currently downloading. Cancel the ongoing update?",
             "title": "Cancel update?"
         },
+        "card": {
+            "needsUpdate": "Needs update"
+        },
         "empty": "No installed games to show. Install something first.",
         "filter": {
             "all": "All",

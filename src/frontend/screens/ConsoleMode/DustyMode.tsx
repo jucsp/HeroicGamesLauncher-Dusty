@@ -1,3 +1,4 @@
+import './index.scss'
 import './DustyMode.scss'
 
 import React, {
@@ -700,7 +701,7 @@ export default function DustyMode() {
           </div>
         ) : (
           <div
-            className="dustyGridScroller"
+            className="consoleGridScroller"
             ref={gridRef}
             role="listbox"
             aria-label={t('console.games', 'Installed games')}

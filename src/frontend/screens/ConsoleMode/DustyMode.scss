@@ -1,487 +1,9 @@
-@use 'sass:list';
-
-.ConsoleMode {
-  --console-card-width: clamp(160px, 13vw, 220px);
-  --console-card-gap: clamp(14px, 1.4vw, 28px);
-
-  position: fixed;
-  inset: 0;
-  display: grid;
-  grid-template-rows: auto auto 1fr auto;
-  background:
-    radial-gradient(
-      ellipse at top,
-      color-mix(in srgb, var(--accent, #0080ff) 18%, transparent) 0%,
-      transparent 55%
-    ),
-    var(--body-background, #101014);
-  color: var(--text-default, #eae8e5);
-  overflow: hidden;
-  animation: consoleEnter 380ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  font-family: var(--primary-font-family);
-
-  // dim everything while a game is launching
-  > .consoleTopBar,
-  > .dustyDiscArea,
-  > .dustyTVArea,
-  > .dustyShelfArea,
-  > .consoleFooter {
-    transition: opacity 220ms ease;
-  }
-
-  &.launching {
-    > .consoleTopBar,
-    > .dustyDiscArea,
-    > .dustyTVArea,
-    > .dustyShelfArea,
-    > .consoleFooter {
-      opacity: 0.2;
-      pointer-events: none;
-    }
-  }
-}
-
-@keyframes consoleEnter {
-  0% {
-    opacity: 0;
-    transform: scale(0.985);
-    filter: blur(6px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0);
-  }
-}
-
-.consoleTopBar {
-  display: grid;
-  grid-template-columns: 1fr max-content 1fr;
-  align-items: center;
-  gap: var(--space-md, 12px);
-  padding: 24px 32px 12px;
-}
-
-.consoleLogo {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-}
-
-.consoleFilters {
-  display: flex;
-  gap: 8px;
-  flex: 1;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.consoleTopRight {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-self: end;
-}
-
-%consoleButtonDisabled {
-  &:disabled {
-    cursor: default;
-    opacity: 0.5;
-  }
-}
-
-.consoleChip {
-  @extend %consoleButtonDisabled;
-  appearance: none;
-  border: 1px solid
-    color-mix(in srgb, var(--text-default, #eae8e5) 20%, transparent);
-  background: color-mix(
-    in srgb,
-    var(--background-darker, #1a1a20) 60%,
-    transparent
-  );
-  color: var(--text-default, #eae8e5);
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition:
-    background 140ms ease,
-    border-color 140ms ease,
-    color 140ms ease;
-
-  &:hover,
-  &:focus-visible {
-    border-color: var(--accent, #0080ff);
-    outline: none;
-  }
-
-  &:hover.active,
-  &:focus-visible.active {
-    border: 1px solid
-      color-mix(in srgb, var(--text-title, #eae8e5) 90%, transparent);
-    background: color-mix(in srgb, var(--accent, #1a1a20) 60%, transparent);
-    outline: none;
-  }
-
-  &.active {
-    border: 1px solid
-      color-mix(in srgb, var(--text-title, #eae8e5) 70%, transparent);
-    background: color-mix(in srgb, var(--accent, #1a1a20) 30%, transparent);
-    color: var(--text-title, #fff);
-  }
-}
-
-.consoleDividerVertical {
-  height: 60%;
-  margin-left: 0.2rem;
-  margin-right: 0.2rem;
-  border: 1px solid
-    color-mix(in srgb, var(--text-title, #eae8e5) 30%, transparent);
-}
-
-.consoleQuitButton {
-  @extend %consoleButtonDisabled;
-  appearance: none;
-  border: 1px solid var(--cancel-button, #b94a3a);
-  background: transparent;
-  color: var(--cancel-button, #b94a3a);
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background 140ms ease,
-    color 140ms ease;
-
-  &:hover,
-  &:focus-visible {
-    background: var(--cancel-button, #b94a3a);
-    color: var(--text-title, #fff);
-    outline: none;
-  }
-
-  &.danger {
-    border-color: var(--danger);
-    color: var(--danger);
-
-    &:hover,
-    &:focus-visible {
-      background: var(--danger-hover, var(--danger));
-      color: var(--text-title, #fff);
-    }
-  }
-}
-
-.consoleTitleBar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 32px 4px;
-  min-height: 0;
-}
-
-.consoleStage {
-  position: relative;
-  display: flex;
-  align-items: stretch;
-  min-height: 0;
-}
-
-.consoleEmpty {
-  font-size: 1.2rem;
-  color: var(--text-secondary, #b1b1b1);
-  text-align: center;
-  max-width: 60ch;
-  padding: 2rem;
-  margin: auto;
-}
-
-.dustyGridScroller {
-  flex: 1;
-  min-height: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  outline: none;
-  scroll-padding-inline: 16px;
-  padding: 8px 8px 16px;
-
-  &::-webkit-scrollbar {
-    width: 10px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: color-mix(
-      in srgb,
-      var(--text-default, #eae8e5) 25%,
-      transparent
-    );
-    border-radius: 5px;
-  }
-}
-
-.consoleGrid {
-  display: grid;
-  // fixed-width cells so spacing stays uniform even with lots of games
-  grid-template-columns: repeat(auto-fill, var(--console-card-width));
-  justify-content: flex-start;
-  gap: var(--console-card-gap);
-  padding-block: 16px;
-}
-
-.dustyCard {
-  position: relative;
-  aspect-ratio: 3 / 4;
-  border: none;
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
-  border-radius: 12px;
-  overflow: hidden;
-  outline: none;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
-  transition:
-    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 180ms ease,
-    filter 180ms ease;
-  filter: saturate(0.85) brightness(0.88);
-
-  &:hover {
-    filter: none;
-  }
-
-  &.focused {
-    transform: scale(1.06);
-    filter: none;
-    box-shadow:
-      0 10px 30px rgba(0, 0, 0, 0.6),
-      0 0 0 3px var(--accent, #0080ff),
-      0 0 22px color-mix(in srgb, var(--accent, #0080ff) 40%, transparent);
-    z-index: 2;
-  }
-}
-
-.consoleCardArt {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.consoleCardBadge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--warning, #f0a03a);
-  color: #111;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-  pointer-events: none;
-}
-
-.consoleCardStatus {
-  position: absolute;
-  inset: auto 0 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 10px 12px 12px;
-  background: linear-gradient(
-    to top,
-    color-mix(in srgb, #000 90%, transparent) 30%,
-    transparent 100%
-  );
-  color: var(--text-title, #fff);
-  pointer-events: none;
-}
-
-.consoleCardStatusText {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.consoleCardProgress {
-  height: 4px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--text-default, #eae8e5) 20%, transparent);
-  overflow: hidden;
-}
-
-.consoleCardProgressFill {
-  height: 100%;
-  background: var(--accent, #0080ff);
-  border-radius: inherit;
-  transition: width 220ms ease;
-}
-
-.consoleFooter {
-  display: flex;
-  justify-content: center;
-  padding: 12px 32px 16px;
-  min-height: 60px;
-}
-
-.consoleControllerHints {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 6px 22px;
-  padding-top: 4px;
-  color: var(--text-secondary, #b1b1b1);
-  font-size: 0.85rem;
-  opacity: 0.85;
-
-  .hint {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .buttonImage {
-    width: 26px;
-    height: 26px;
-    display: inline-block;
-    background-image: var(--imageUrl);
-    background-size: 100% 100%;
-    flex-shrink: 0;
-  }
-
-  $layouts: (
-    xbox: (
-      xbox-series,
-      XboxSeriesX,
-      (A, B, LB, RB, RT)
-    ),
-    ps4: (
-      ps4,
-      PS4,
-      (Cross, Circle, L1, R1, R2)
-    ),
-    ps5: (
-      ps5,
-      PS5,
-      (Cross, Circle, L1, R1, R2)
-    ),
-    steam-deck: (
-      steam-deck,
-      SteamDeck,
-      (A, B, L1, R1, R2)
-    ),
-    nintendo: (
-      switch,
-      Switch,
-      (A, B, LB, RB, RT)
-    )
-  );
-  $button-classes: main-action, back, shoulder-l, shoulder-r, trigger-r;
-
-  @each $layout, $config in $layouts {
-    $folder: list.nth($config, 1);
-    $prefix: list.nth($config, 2);
-    $suffixes: list.nth($config, 3);
-
-    &.#{$layout} {
-      @for $i from 1 through list.length($button-classes) {
-        .buttonImage.#{list.nth($button-classes, $i)} {
-          --imageUrl: url(/src/frontend/assets/controllers/#{$folder}/#{$prefix}_#{list.nth($suffixes, $i)}.png);
-        }
-      }
-      .buttonImage.d-pad {
-        --imageUrl: url(/src/frontend/assets/controllers/#{$folder}/#{$prefix}_Dpad.png);
-      }
-      .buttonImage.left-stick {
-        --imageUrl: url(/src/frontend/assets/controllers/#{$folder}/#{$prefix}_Left_Stick.png);
-      }
-    }
-  }
-}
-
-.consoleFocusTitle {
-  margin: 0;
-  font-size: clamp(1.1rem, 1.6vw, 1.6rem);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--text-title, var(--text-default, #eae8e5));
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
-  animation: titleFade 180ms ease;
-}
-
-@keyframes titleFade {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.consoleUpdateNoticeBody {
-  max-width: 560px;
-  text-align: center;
-  color: var(--text-secondary, #b1b1b1);
-  line-height: 1.5;
-  margin: 0;
-}
-
-.consoleUpdateNoticeButtons {
-  display: flex;
-  gap: 16px;
-  margin-top: 12px;
-
-  .consoleChip {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 22px;
-    font-size: 1rem;
-
-    kbd {
-      font-family: var(--primary-font-family);
-      font-size: 0.8rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 6px;
-      border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
-      background: color-mix(in srgb, currentColor 10%, transparent);
-    }
-  }
-}
-
-// App-level: when console mode is active, strip scrollbars and chrome
-.App.consoleMode {
-  overflow: hidden;
-  .content.consoleContent {
-    height: 100vh;
-    width: 100vw;
-    padding: 0;
-    margin: 0;
-  }
-}
-
+@use './index.scss';
 /* ═══════════════════════════════════════
    DUSTY v3 — Asset-based layout
    ═══════════════════════════════════════ */
 
-.ConsoleMode {
+.ConsoleMode--dusty {
   --spine-height: clamp(140px, 16vh, 200px);
 
   position: relative;
@@ -506,7 +28,7 @@
 }
 
 /* ── TOP BAR ── */
-.consoleTopBar {
+.ConsoleMode--dusty .consoleTopBar {
   position: absolute;
   z-index: 10;
   display: flex;
@@ -516,25 +38,25 @@
   background: rgba(5, 2, 16, 0.55);
   border-bottom: 1px solid rgba(168, 85, 247, 0.08);
 }
-.consoleLogo {
+.ConsoleMode--dusty .consoleLogo {
   width: 36px;
   height: 36px;
   flex-shrink: 0;
 }
-.consoleFilters {
+.ConsoleMode--dusty .consoleFilters {
   display: flex;
   gap: 8px;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
 }
-.consoleTopRight {
+.ConsoleMode--dusty .consoleTopRight {
   display: flex;
   gap: 8px;
   align-items: center;
   margin-left: auto;
 }
-.consoleChip {
+.ConsoleMode--dusty .consoleChip {
   appearance: none;
   border: 1px solid rgba(200, 200, 220, 0.2);
   background: rgba(20, 10, 40, 0.6);
@@ -563,12 +85,12 @@
     cursor: default;
   }
 }
-.consoleDividerVertical {
+.ConsoleMode--dusty .consoleDividerVertical {
   height: 60%;
   margin: 0 2px;
   border: 1px solid rgba(200, 200, 220, 0.18);
 }
-.consoleQuitButton {
+.ConsoleMode--dusty .consoleQuitButton {
   appearance: none;
   border: 1px solid rgba(185, 74, 58, 0.7);
   background: transparent;
@@ -829,7 +351,7 @@
 }
 
 /* Screen area — green CRT, fills dustyTVArea */
-.tv-screen {
+.ConsoleMode--dusty .tv-screen {
   width: 100%;
   height: 100%;
   background: transparent;
@@ -871,7 +393,7 @@
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
 }
-.tv-divider {
+.ConsoleMode--dusty .tv-divider {
   height: 1px;
   flex-shrink: 0;
   background: linear-gradient(
@@ -881,20 +403,20 @@
     transparent
   );
 }
-.tv-meta {
+.ConsoleMode--dusty .tv-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
 }
-.tv-meta-label {
+.ConsoleMode--dusty .tv-meta-label {
   font-size: 8px;
   font-weight: 700;
   color: rgba(80, 200, 80, 0.5);
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
-.tv-meta-val {
+.ConsoleMode--dusty .tv-meta-val {
   font-size: 12px;
   font-weight: 600;
   color: rgba(140, 200, 140, 0.88);
@@ -902,7 +424,7 @@
     color: #6ee7b7;
   }
 }
-.tv-play-btn {
+.ConsoleMode--dusty .tv-play-btn {
   flex-shrink: 0;
   padding: 8px 14px;
   border-radius: 2px;
@@ -926,7 +448,7 @@
   }
 }
 /* ── GRID SCROLLER — fills dustyShelfArea ── */
-.dustyGridScroller {
+.ConsoleMode--dusty .consoleGridScroller {
   width: 100%;
   height: 100%;
   overflow-x: auto;
@@ -945,7 +467,7 @@
 }
 
 /* ── SPINE GRID ── */
-.consoleGrid {
+.ConsoleMode--dusty .consoleGrid {
   position: relative;
   z-index: 2;
   display: flex;
@@ -958,7 +480,7 @@
 
 /* ── SPINE SLOT WRAPPER (library_unit_v2.png background) ── */
 /* library_unit_v2: 82×448 → ratio 82:448 */
-.spineSlotWrap {
+.ConsoleMode--dusty .spineSlotWrap {
   position: relative;
   flex-shrink: 0;
   height: 100%;
@@ -983,7 +505,7 @@
   }
 }
 
-.spineSlotEmpty {
+.ConsoleMode--dusty .spineSlotEmpty {
   pointer-events: none;
   opacity: 0.4;
 }
@@ -991,7 +513,7 @@
 /* ── SPINE CARDS ── */
 /* inner area of library_unit_v2: x=8,y=26 inside 82×448, inner=66×414 */
 /* left=8/82=9.8%, top=26/448=5.8%, right=8/82=9.8%, bottom=8/448=1.8% */
-.dustyCard {
+.ConsoleMode--dusty .consoleCard {
   position: absolute !important;
   top: 5.8% !important;
   left: 9.8% !important;
@@ -1012,7 +534,7 @@
 }
 
 /* Blurred art background inside the card */
-.spineArtBg {
+.ConsoleMode--dusty .spineArtBg {
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -1024,7 +546,7 @@
 }
 
 /* ── SPINE CONTENT STYLES ── */
-.spineStripe {
+.ConsoleMode--dusty .spineStripe {
   position: absolute;
   left: 0;
   top: 0;
@@ -1033,7 +555,7 @@
   z-index: 3;
 }
 
-.spineContent {
+.ConsoleMode--dusty .spineContent {
   position: absolute;
   inset: 0;
   z-index: 2;
@@ -1051,7 +573,7 @@
 }
 
 /* PC CD-ROM logo — top of spine */
-.spinePCWrap {
+.ConsoleMode--dusty .spinePCWrap {
   flex-shrink: 0;
   width: 100%;
   display: flex;
@@ -1060,7 +582,7 @@
   height: 20%;
   overflow: hidden;
 }
-.spinePCLogo {
+.ConsoleMode--dusty .spinePCLogo {
   max-width: 70%;
   max-height: 100%;
   width: auto;
@@ -1073,7 +595,7 @@
 }
 
 /* Game title/logo center */
-.spineTitleWrap {
+.ConsoleMode--dusty .spineTitleWrap {
   flex: 1;
   display: flex;
   align-items: center;
@@ -1083,14 +605,14 @@
   min-height: 0;
   padding: 2px 0;
 }
-.spineLogoImg {
+.ConsoleMode--dusty .spineLogoImg {
   max-width: 140%;
   max-height: 130%;
   object-fit: contain;
   transform: rotate(-90deg);
   filter: brightness(1.3) drop-shadow(0 0 3px rgba(0, 0, 0, 0.95));
 }
-.spineTitleText {
+.ConsoleMode--dusty .spineTitleText {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   font-size: clamp(6px, 0.7vw, 9px);
@@ -1109,7 +631,7 @@
 }
 
 /* ESRB badge — bottom of spine */
-.spineESRBWrap {
+.ConsoleMode--dusty .spineESRBWrap {
   flex-shrink: 0;
   width: 100%;
   display: flex;
@@ -1118,7 +640,7 @@
   height: 15%;
   overflow: hidden;
 }
-.spineESRBLogo {
+.ConsoleMode--dusty .spineESRBLogo {
   max-width: 60%;
   max-height: 100%;
   width: auto;
@@ -1130,7 +652,7 @@
   transform: none;
 }
 
-.consoleFooter {
+.ConsoleMode--dusty .consoleFooter {
   position: absolute;
   bottom: 0;
   left: 0;
