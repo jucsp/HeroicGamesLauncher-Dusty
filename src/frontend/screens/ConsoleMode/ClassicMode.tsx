@@ -17,7 +17,7 @@ import { sendKill, updateGame } from 'frontend/helpers'
 import HeroicIcon from 'frontend/assets/heroic-icon.svg?react'
 
 import ConfirmDialog from './components/ConfirmDialog'
-import ConsoleCard from './components/ConsoleCard'
+import ClassicCard from './components/ConsoleCard/ClassicCard'
 import ControllerHints from './components/ControllerHints'
 import LaunchOverlay from './components/LaunchOverlay'
 import InstallOverlay from './InstallOverlay'
@@ -484,7 +484,7 @@ export default function ClassicMode() {
               {visibleGames.map((game, i) => {
                 const isFocused = i === focusedIndex
                 return (
-                  <ConsoleCard
+                  <ClassicCard
                     key={`${game.runner}-${game.app_name}`}
                     ref={(el) => {
                       cardRefs.current[i] = el
