@@ -37,6 +37,8 @@ import type { GameInfo, Runner } from 'common/types'
 
 type StoreKey = Runner | 'all'
 
+const EMPTY_SLOTS = 40
+
 const CANCEL_DOWNLOAD_COPY = {
   update: {
     title: (t: TFunction) => t('console.cancelUpdate.title', 'Cancel update?'),
@@ -219,10 +221,19 @@ export default function ConsoleMode() {
   useEffect(() => {
     const btn = cardRefs.current[focusedIndex]
     if (!btn) return
+
     if (document.activeElement !== btn) {
       btn.focus({ preventScroll: true })
     }
-    btn.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+
+    // Usar el spineSlotWrap (padre del btn) como target del scroll
+    // scrollIntoView sobre el contenedor directo del grid funciona mejor
+    const slot = btn.closest<HTMLElement>('.spineSlotWrap') ?? btn
+    slot.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'nearest'
+    })
   }, [focusedIndex, visibleGames.length])
 
   const cycleStore = useCallback(
@@ -662,6 +673,13 @@ export default function ConsoleMode() {
                   </div>
                 )
               })}
+              {Array.from({ length: EMPTY_SLOTS }).map((_, i) => (
+                <div
+                  key={`empty-slot-${i}`}
+                  className="spineSlotWrap spineSlotEmpty"
+                  aria-hidden="true"
+                />
+              ))}
             </div>
           </div>
         )}

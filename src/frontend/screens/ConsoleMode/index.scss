@@ -203,11 +203,11 @@
 .consoleGridScroller {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   outline: none;
-  scroll-padding-block: 40px;
-  padding: 8px 32px 16px;
+  scroll-padding-inline: 16px;
+  padding: 8px 8px 16px;
 
   &::-webkit-scrollbar {
     width: 10px;
@@ -229,7 +229,7 @@
   display: grid;
   // fixed-width cells so spacing stays uniform even with lots of games
   grid-template-columns: repeat(auto-fill, var(--console-card-width));
-  justify-content: center;
+  justify-content: flex-start;
   gap: var(--console-card-gap);
   padding-block: 16px;
 }
@@ -622,7 +622,7 @@
 .dustyShelfArea {
   position: absolute;
   z-index: 10;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Game box — inside dustyDiscArea */
@@ -981,6 +981,11 @@
     transform: translateY(-12px);
     z-index: 5;
   }
+}
+
+.spineSlotEmpty {
+  pointer-events: none;
+  opacity: 0.4;
 }
 
 /* ── SPINE CARDS ── */
