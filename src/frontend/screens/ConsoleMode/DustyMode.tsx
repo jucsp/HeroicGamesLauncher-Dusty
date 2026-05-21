@@ -1,8 +1,6 @@
-import './index.scss'
-import { configStore } from 'frontend/helpers/electronStores'
-import DustyMode from './DustyMode'
+import './DustyMode.scss'
 
-import {
+import React, {
   useCallback,
   useContext,
   useEffect,
@@ -15,8 +13,11 @@ import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 
 import ContextProvider from 'frontend/state/ContextProvider'
-import { sendKill, updateGame } from 'frontend/helpers'
+import { getGameInfo, sendKill, updateGame } from 'frontend/helpers'
+import { timestampStore } from 'frontend/helpers/electronStores'
 import HeroicIcon from 'frontend/assets/heroic-icon.svg?react'
+import bgAsset from 'frontend/assets/dusty/background.png'
+import { CachedImage } from 'frontend/components/UI'
 
 import ConfirmDialog from './components/ConfirmDialog'
 import ConsoleCard from './components/ConsoleCard'
@@ -30,12 +31,22 @@ import {
   getActionButtonLabel,
   getBackButtonLabel
 } from './controller'
-import { useColumnCount, useGamepadButtonPress, useGamepadInfo } from './hooks'
+import { useGamepadButtonPress, useGamepadInfo } from './hooks'
 
 import type { TFunction } from 'i18next'
 import type { GameInfo, Runner } from 'common/types'
 
 type StoreKey = Runner | 'all'
+
+const EMPTY_SLOTS = 40
+
+const convertMinsToHrsMins = (mins: number) => {
+  let h: string | number = Math.floor(mins / 60)
+  let m: string | number = mins % 60
+  h = h < 10 ? '0' + h : h
+  m = m < 10 ? '0' + m : m
+  return `${h}h ${m}m`
+}
 
 const CANCEL_DOWNLOAD_COPY = {
   update: {
@@ -57,10 +68,7 @@ const CANCEL_DOWNLOAD_COPY = {
   }
 } as const
 
-export default function ConsoleMode() {
-  const consoleTheme = (configStore.get_nodefault('consoleTheme') as string) ?? 'dusty'
-  if (consoleTheme === 'dusty') return <DustyMode />
-
+export default function DustyMode() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const {
@@ -91,6 +99,8 @@ export default function ConsoleMode() {
   const [queuedNoticeGame, setQueuedNoticeGame] = useState<GameInfo | null>(
     null
   )
+  const [focusedGameInfo, setFocusedGameInfo] = useState<GameInfo | null>(null)
+  const [focusedDesc, setFocusedDesc] = useState<string>('')
 
   const { connected: gamepadConnected, layout: controllerLayout } =
     useGamepadInfo()
@@ -155,6 +165,44 @@ export default function ConsoleMode() {
     })
   }, [allGames, filteringByInstalled, activeStore, ascending])
 
+  useEffect(() => {
+    const game = visibleGames[focusedIndex]
+    if (!game) {
+      setFocusedGameInfo(null)
+      return
+    }
+    setFocusedGameInfo(null)
+    getGameInfo(game.app_name, game.runner)
+      .then((info) => setFocusedGameInfo(info ?? game))
+      .catch(() => setFocusedGameInfo(game))
+  }, [focusedIndex, visibleGames])
+
+  useEffect(() => {
+    const game = visibleGames[focusedIndex]
+    if (!game) {
+      setFocusedDesc('')
+      return
+    }
+    setFocusedDesc('...')
+    window.api
+      .getExtraInfo(game.app_name, game.runner)
+      .then((extra) => {
+        if (!extra) {
+          setFocusedDesc('')
+          return
+        }
+        const title = game.overrides?.title || game.title
+        const desc =
+          extra.about?.shortDescription ||
+          (extra.about?.description && extra.about.description !== title
+            ? extra.about.description
+            : '') ||
+          ''
+        setFocusedDesc(desc)
+      })
+      .catch(() => setFocusedDesc(''))
+  }, [focusedIndex, visibleGames])
+
   const storesWithGames = useMemo(() => {
     const set = new Set<Runner>()
     for (const g of allGames) set.add(g.runner)
@@ -198,8 +246,6 @@ export default function ConsoleMode() {
     }
   }, [enabledStoreKeys, activeStore])
 
-  const columns = useColumnCount(cardRefs, visibleGames.length)
-
   useEffect(() => {
     // always make sane focused index
     if (focusedIndex >= visibleGames.length || focusedIndex < 0) {
@@ -212,10 +258,19 @@ export default function ConsoleMode() {
   useEffect(() => {
     const btn = cardRefs.current[focusedIndex]
     if (!btn) return
+
     if (document.activeElement !== btn) {
       btn.focus({ preventScroll: true })
     }
-    btn.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+
+    // Usar el spineSlotWrap (padre del btn) como target del scroll
+    // scrollIntoView sobre el contenedor directo del grid funciona mejor
+    const slot = btn.closest<HTMLElement>('.spineSlotWrap') ?? btn
+    slot.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'nearest'
+    })
   }, [focusedIndex, visibleGames.length])
 
   const cycleStore = useCallback(
@@ -352,19 +407,21 @@ export default function ConsoleMode() {
       e.stopPropagation()
       setFocusedIndex((i) => Math.max(i - 1, 0))
     } else if (e.key === 'ArrowDown') {
+      // Jump forward 5 spines (like page-right on a shelf)
       e.preventDefault()
       e.stopPropagation()
-      setFocusedIndex((i) => Math.min(i + columns, last))
+      setFocusedIndex((i) => Math.min(i + 5, last))
     } else if (e.key === 'ArrowUp') {
+      // Jump back 5 spines
       e.preventDefault()
       e.stopPropagation()
-      if (focusedIndex < columns) {
+      if (focusedIndex < 5) {
         const first = topBarRef.current?.querySelector<HTMLButtonElement>(
           'button:not(:disabled)'
         )
         first?.focus()
       } else {
-        setFocusedIndex((i) => Math.max(i - columns, 0))
+        setFocusedIndex((i) => Math.max(i - 5, 0))
       }
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
@@ -399,12 +456,49 @@ export default function ConsoleMode() {
   useGamepadButtonPress(BTN_R1, () => cycleStore(1), idle)
   useGamepadButtonPress(BTN_R2, toggleSort, idle)
 
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  })
+  useEffect(() => {
+    const handler = () =>
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight })
+    window.addEventListener('resize', handler)
+    return () => window.removeEventListener('resize', handler)
+  }, [])
+  const { width: windowWidth, height: windowHeight } = windowSize
+
+  const BG_W = 2750
+  const BG_H = 1568
+
+  const scaledPosition = (
+    x: number,
+    y: number,
+    w: number,
+    h: number
+  ): React.CSSProperties => {
+    const scaleX = windowWidth / BG_W
+    const scaleY = windowHeight / BG_H
+    return {
+      position: 'absolute',
+      left: `${x * scaleX}px`,
+      top: `${y * scaleY}px`,
+      width: `${w * scaleX}px`,
+      height: `${h * scaleY}px`
+    }
+  }
+
   return (
     <div className={classNames('ConsoleMode', { launching: !!launchingGame })}>
+      {/* Fondo completo */}
+      <img src={bgAsset} className="dusty-bg" alt="" />
+
+      {/* Menú superior — bg coords: x=63, y=109, w=2632, h=144 */}
       <div
         className="consoleTopBar"
         ref={topBarRef}
         onKeyDown={onTopBarKeyDown}
+        style={scaledPosition(63, 109, 2632, 144)}
       >
         <HeroicIcon className="consoleLogo" />
         <div className="consoleFilters">
@@ -415,7 +509,7 @@ export default function ConsoleMode() {
             })}
             onClick={() => setFilteringByInstalled(!filteringByInstalled)}
           >
-            {t('status.installed', 'Installed')}
+            {t('status.installed', 'Instalado')}
           </button>
           <div className="consoleDividerVertical" />
           {storeFilters
@@ -459,15 +553,138 @@ export default function ConsoleMode() {
         </div>
       </div>
 
-      <div className="consoleTitleBar">
-        {visibleGames[focusedIndex] && (
-          <h1 className="consoleFocusTitle">
-            {visibleGames[focusedIndex].title}
-          </h1>
-        )}
+      {/* Área disco + carátula — bg coords: x=835, y=362, w=528, h=479 */}
+      <div className="dustyDiscArea" style={scaledPosition(835, 362, 528, 479)}>
+        {visibleGames[focusedIndex] &&
+          (() => {
+            const game = visibleGames[focusedIndex]
+            const coverUrl =
+              game.overrides?.art_square ||
+              game.art_square ||
+              game.art_cover ||
+              ''
+            const STORE_LABELS: Record<string, string> = {
+              legendary: 'EPIC GAMES',
+              gog: 'GOG',
+              nile: 'AMAZON',
+              zoom: 'ZOOM',
+              sideload: 'CUSTOM'
+            }
+            return (
+              <>
+                <div className="dustyBoxCase">
+                  <div className="dustyBoxTopBar">
+                    <span className="dustyBoxPCMain">PC</span>
+                    <span className="dustyBoxPCLine">CD-ROM</span>
+                    <span className="dustyBoxStoreLabel">
+                      {STORE_LABELS[game.runner] ?? 'PC'}
+                    </span>
+                  </div>
+                  <div className="dustyBoxArtWrap">
+                    <CachedImage
+                      key={`art-${game.app_name}`}
+                      src={coverUrl}
+                      alt={game.title}
+                      className="dustyBoxArt"
+                    />
+                    <div className="dustyBoxSheen" />
+                  </div>
+                  <div className="dustyBoxBottom">
+                    <span className="dustyBoxTitle">
+                      {game.overrides?.title || game.title}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="dustyDisc" key={`disc-${game.app_name}`}>
+                  <div className="dustyDiscSurface">
+                    <div className="dustyDiscTracks" />
+                    <div className="dustyDiscLabel">
+                      <CachedImage
+                        src={coverUrl}
+                        alt={game.title}
+                        className="dustyDiscLabelArt"
+                      />
+                      <div className="dustyDiscLabelOverlay" />
+                      <div className="dustyDiscHub" />
+                      <div className="dustyDiscHole" />
+                    </div>
+                    <div className="dustyDiscSheen" />
+                  </div>
+                </div>
+              </>
+            )
+          })()}
       </div>
 
-      <div className="consoleStage">
+      {/* Área TV descripción — bg coords: x=1960, y=349, w=616, h=449 */}
+      <div className="dustyTVArea" style={scaledPosition(1960, 349, 616, 449)}>
+        {visibleGames[focusedIndex] &&
+          (() => {
+            const game = visibleGames[focusedIndex]
+            const info = focusedGameInfo ?? game
+            const tsInfo = timestampStore.get_nodefault(game.app_name)
+            const totalPlayed = tsInfo?.totalPlayed
+              ? convertMinsToHrsMins(tsInfo.totalPlayed)
+              : null
+            const lastPlayed = tsInfo?.lastPlayed
+              ? new Intl.DateTimeFormat(undefined, {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric'
+                }).format(new Date(tsInfo.lastPlayed))
+              : null
+            return (
+              <div className="tv-screen" key={`detail-${game.app_name}`}>
+                <h2 className="dustyDetailTitle">
+                  {game.overrides?.title || game.title}
+                </h2>
+                {info.developer && (
+                  <p className="dustyDetailDev">{info.developer}</p>
+                )}
+                <p className="dustyDetailDesc">{focusedDesc}</p>
+                <div className="tv-divider" />
+                {totalPlayed && (
+                  <div className="tv-meta">
+                    <span className="tv-meta-label">JUGADO</span>
+                    <span className="tv-meta-val ok">{totalPlayed}</span>
+                  </div>
+                )}
+                {lastPlayed && (
+                  <div className="tv-meta">
+                    <span className="tv-meta-label">ÚLTIMA VEZ</span>
+                    <span className="tv-meta-val">{lastPlayed}</span>
+                  </div>
+                )}
+                <div className="tv-meta">
+                  <span className="tv-meta-label">ESTADO</span>
+                  <span
+                    className={`tv-meta-val ${game.is_installed ? 'ok' : ''}`}
+                  >
+                    {game.is_installed
+                      ? t('status.installed', 'Instalado')
+                      : t('game.notInstalled', 'No instalado')}
+                  </span>
+                </div>
+                <button
+                  className="tv-play-btn"
+                  onClick={() => activateGame(game)}
+                  disabled={!idle}
+                >
+                  {game.is_installed
+                    ? `▶ ${t('label.playing.start', 'Jugar')}`
+                    : `↓ ${t('game.install', 'Instalar')}`}
+                </button>
+              </div>
+            )
+          })()}
+      </div>
+
+      {/* Área shelf/lomos — bg coords: x=77, y=979, w=2608, h=448 */}
+      <div
+        className="dustyShelfArea"
+        style={scaledPosition(77, 979, 2608, 448)}
+      >
         {visibleGames.length === 0 ? (
           <div className="consoleEmpty">
             {refreshing
@@ -489,23 +706,36 @@ export default function ConsoleMode() {
               {visibleGames.map((game, i) => {
                 const isFocused = i === focusedIndex
                 return (
-                  <ConsoleCard
-                    key={`${game.runner}-${game.app_name}`}
-                    ref={(el) => {
-                      cardRefs.current[i] = el
-                    }}
-                    game={game}
-                    focused={isFocused}
-                    needsUpdate={gameUpdates.includes(game.app_name)}
-                    onClick={() => {
-                      if (isFocused) activateGame(game)
-                      else setFocusedIndex(i)
-                    }}
-                    onMouseEnter={() => setFocusedIndex(i)}
-                    onFocus={() => setFocusedIndex(i)}
-                  />
+                  <div
+                    key={`slot-${game.runner}-${game.app_name}`}
+                    className={classNames('spineSlotWrap', {
+                      focused: isFocused
+                    })}
+                  >
+                    <ConsoleCard
+                      ref={(el) => {
+                        cardRefs.current[i] = el
+                      }}
+                      game={game}
+                      focused={isFocused}
+                      needsUpdate={gameUpdates.includes(game.app_name)}
+                      onClick={() => {
+                        if (isFocused) activateGame(game)
+                        else setFocusedIndex(i)
+                      }}
+                      onMouseEnter={() => setFocusedIndex(i)}
+                      onFocus={() => setFocusedIndex(i)}
+                    />
+                  </div>
                 )
               })}
+              {Array.from({ length: EMPTY_SLOTS }).map((_, i) => (
+                <div
+                  key={`empty-slot-${i}`}
+                  className="spineSlotWrap spineSlotEmpty"
+                  aria-hidden="true"
+                />
+              ))}
             </div>
           </div>
         )}

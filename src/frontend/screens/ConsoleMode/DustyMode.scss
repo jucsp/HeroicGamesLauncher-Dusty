@@ -1,0 +1,1141 @@
+@use 'sass:list';
+
+.ConsoleMode {
+  --console-card-width: clamp(160px, 13vw, 220px);
+  --console-card-gap: clamp(14px, 1.4vw, 28px);
+
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  background:
+    radial-gradient(
+      ellipse at top,
+      color-mix(in srgb, var(--accent, #0080ff) 18%, transparent) 0%,
+      transparent 55%
+    ),
+    var(--body-background, #101014);
+  color: var(--text-default, #eae8e5);
+  overflow: hidden;
+  animation: consoleEnter 380ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  font-family: var(--primary-font-family);
+
+  // dim everything while a game is launching
+  > .consoleTopBar,
+  > .dustyDiscArea,
+  > .dustyTVArea,
+  > .dustyShelfArea,
+  > .consoleFooter {
+    transition: opacity 220ms ease;
+  }
+
+  &.launching {
+    > .consoleTopBar,
+    > .dustyDiscArea,
+    > .dustyTVArea,
+    > .dustyShelfArea,
+    > .consoleFooter {
+      opacity: 0.2;
+      pointer-events: none;
+    }
+  }
+}
+
+@keyframes consoleEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.985);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+.consoleTopBar {
+  display: grid;
+  grid-template-columns: 1fr max-content 1fr;
+  align-items: center;
+  gap: var(--space-md, 12px);
+  padding: 24px 32px 12px;
+}
+
+.consoleLogo {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.consoleFilters {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.consoleTopRight {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-self: end;
+}
+
+%consoleButtonDisabled {
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+}
+
+.consoleChip {
+  @extend %consoleButtonDisabled;
+  appearance: none;
+  border: 1px solid
+    color-mix(in srgb, var(--text-default, #eae8e5) 20%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--background-darker, #1a1a20) 60%,
+    transparent
+  );
+  color: var(--text-default, #eae8e5);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--accent, #0080ff);
+    outline: none;
+  }
+
+  &:hover.active,
+  &:focus-visible.active {
+    border: 1px solid
+      color-mix(in srgb, var(--text-title, #eae8e5) 90%, transparent);
+    background: color-mix(in srgb, var(--accent, #1a1a20) 60%, transparent);
+    outline: none;
+  }
+
+  &.active {
+    border: 1px solid
+      color-mix(in srgb, var(--text-title, #eae8e5) 70%, transparent);
+    background: color-mix(in srgb, var(--accent, #1a1a20) 30%, transparent);
+    color: var(--text-title, #fff);
+  }
+}
+
+.consoleDividerVertical {
+  height: 60%;
+  margin-left: 0.2rem;
+  margin-right: 0.2rem;
+  border: 1px solid
+    color-mix(in srgb, var(--text-title, #eae8e5) 30%, transparent);
+}
+
+.consoleQuitButton {
+  @extend %consoleButtonDisabled;
+  appearance: none;
+  border: 1px solid var(--cancel-button, #b94a3a);
+  background: transparent;
+  color: var(--cancel-button, #b94a3a);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 140ms ease,
+    color 140ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--cancel-button, #b94a3a);
+    color: var(--text-title, #fff);
+    outline: none;
+  }
+
+  &.danger {
+    border-color: var(--danger);
+    color: var(--danger);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--danger-hover, var(--danger));
+      color: var(--text-title, #fff);
+    }
+  }
+}
+
+.consoleTitleBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 32px 4px;
+  min-height: 0;
+}
+
+.consoleStage {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.consoleEmpty {
+  font-size: 1.2rem;
+  color: var(--text-secondary, #b1b1b1);
+  text-align: center;
+  max-width: 60ch;
+  padding: 2rem;
+  margin: auto;
+}
+
+.consoleGridScroller {
+  flex: 1;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  outline: none;
+  scroll-padding-inline: 16px;
+  padding: 8px 8px 16px;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: color-mix(
+      in srgb,
+      var(--text-default, #eae8e5) 25%,
+      transparent
+    );
+    border-radius: 5px;
+  }
+}
+
+.consoleGrid {
+  display: grid;
+  // fixed-width cells so spacing stays uniform even with lots of games
+  grid-template-columns: repeat(auto-fill, var(--console-card-width));
+  justify-content: flex-start;
+  gap: var(--console-card-gap);
+  padding-block: 16px;
+}
+
+.consoleCard {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 12px;
+  overflow: hidden;
+  outline: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  transition:
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 180ms ease,
+    filter 180ms ease;
+  filter: saturate(0.85) brightness(0.88);
+
+  &:hover {
+    filter: none;
+  }
+
+  &.focused {
+    transform: scale(1.06);
+    filter: none;
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.6),
+      0 0 0 3px var(--accent, #0080ff),
+      0 0 22px color-mix(in srgb, var(--accent, #0080ff) 40%, transparent);
+    z-index: 2;
+  }
+}
+
+.consoleCardArt {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.consoleCardBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--warning, #f0a03a);
+  color: #111;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.consoleCardStatus {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px 12px;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, #000 90%, transparent) 30%,
+    transparent 100%
+  );
+  color: var(--text-title, #fff);
+  pointer-events: none;
+}
+
+.consoleCardStatusText {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.consoleCardProgress {
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-default, #eae8e5) 20%, transparent);
+  overflow: hidden;
+}
+
+.consoleCardProgressFill {
+  height: 100%;
+  background: var(--accent, #0080ff);
+  border-radius: inherit;
+  transition: width 220ms ease;
+}
+
+.consoleFooter {
+  display: flex;
+  justify-content: center;
+  padding: 12px 32px 16px;
+  min-height: 60px;
+}
+
+.consoleControllerHints {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px 22px;
+  padding-top: 4px;
+  color: var(--text-secondary, #b1b1b1);
+  font-size: 0.85rem;
+  opacity: 0.85;
+
+  .hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .buttonImage {
+    width: 26px;
+    height: 26px;
+    display: inline-block;
+    background-image: var(--imageUrl);
+    background-size: 100% 100%;
+    flex-shrink: 0;
+  }
+
+  $layouts: (
+    xbox: (
+      xbox-series,
+      XboxSeriesX,
+      (A, B, LB, RB, RT)
+    ),
+    ps4: (
+      ps4,
+      PS4,
+      (Cross, Circle, L1, R1, R2)
+    ),
+    ps5: (
+      ps5,
+      PS5,
+      (Cross, Circle, L1, R1, R2)
+    ),
+    steam-deck: (
+      steam-deck,
+      SteamDeck,
+      (A, B, L1, R1, R2)
+    ),
+    nintendo: (
+      switch,
+      Switch,
+      (A, B, LB, RB, RT)
+    )
+  );
+  $button-classes: main-action, back, shoulder-l, shoulder-r, trigger-r;
+
+  @each $layout, $config in $layouts {
+    $folder: list.nth($config, 1);
+    $prefix: list.nth($config, 2);
+    $suffixes: list.nth($config, 3);
+
+    &.#{$layout} {
+      @for $i from 1 through list.length($button-classes) {
+        .buttonImage.#{list.nth($button-classes, $i)} {
+          --imageUrl: url(/src/frontend/assets/controllers/#{$folder}/#{$prefix}_#{list.nth($suffixes, $i)}.png);
+        }
+      }
+      .buttonImage.d-pad {
+        --imageUrl: url(/src/frontend/assets/controllers/#{$folder}/#{$prefix}_Dpad.png);
+      }
+      .buttonImage.left-stick {
+        --imageUrl: url(/src/frontend/assets/controllers/#{$folder}/#{$prefix}_Left_Stick.png);
+      }
+    }
+  }
+}
+
+.consoleFocusTitle {
+  margin: 0;
+  font-size: clamp(1.1rem, 1.6vw, 1.6rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-title, var(--text-default, #eae8e5));
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  animation: titleFade 180ms ease;
+}
+
+@keyframes titleFade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.consoleUpdateNoticeBody {
+  max-width: 560px;
+  text-align: center;
+  color: var(--text-secondary, #b1b1b1);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.consoleUpdateNoticeButtons {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+
+  .consoleChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    font-size: 1rem;
+
+    kbd {
+      font-family: var(--primary-font-family);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+      background: color-mix(in srgb, currentColor 10%, transparent);
+    }
+  }
+}
+
+// App-level: when console mode is active, strip scrollbars and chrome
+.App.consoleMode {
+  overflow: hidden;
+  .content.consoleContent {
+    height: 100vh;
+    width: 100vw;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+/* ═══════════════════════════════════════
+   DUSTY v3 — Asset-based layout
+   ═══════════════════════════════════════ */
+
+.ConsoleMode {
+  --spine-height: clamp(140px, 16vh, 200px);
+
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+  color: var(--text-default, #eae8e5);
+  font-family: var(--primary-font-family);
+  animation: consoleEnter 380ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dusty-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── TOP BAR ── */
+.consoleTopBar {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  background: rgba(5, 2, 16, 0.55);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.08);
+}
+.consoleLogo {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+.consoleFilters {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.consoleTopRight {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+}
+.consoleChip {
+  appearance: none;
+  border: 1px solid rgba(200, 200, 220, 0.2);
+  background: rgba(20, 10, 40, 0.6);
+  color: var(--text-default, #eae8e5);
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--primary-font-family);
+  transition:
+    background 140ms ease,
+    border-color 140ms ease;
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(168, 85, 247, 0.6);
+    outline: none;
+  }
+  &.active {
+    border-color: rgba(200, 160, 255, 0.7);
+    background: rgba(168, 85, 247, 0.2);
+    color: #e9d5ff;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+.consoleDividerVertical {
+  height: 60%;
+  margin: 0 2px;
+  border: 1px solid rgba(200, 200, 220, 0.18);
+}
+.consoleQuitButton {
+  appearance: none;
+  border: 1px solid rgba(185, 74, 58, 0.7);
+  background: transparent;
+  color: rgba(185, 74, 58, 0.85);
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--primary-font-family);
+  transition:
+    background 140ms ease,
+    color 140ms ease;
+  &:hover,
+  &:focus-visible {
+    background: rgba(185, 74, 58, 0.85);
+    color: #fff;
+    outline: none;
+  }
+  &.danger {
+    border-color: var(--danger, #c0392b);
+    color: var(--danger, #c0392b);
+    &:hover {
+      background: var(--danger, #c0392b);
+      color: #fff;
+    }
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+/* ── DISC + ART AREA ── */
+.dustyDiscArea {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+}
+
+/* ── TV DESCRIPTION AREA ── */
+.dustyTVArea {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── SHELF AREA ── */
+.dustyShelfArea {
+  position: absolute;
+  z-index: 10;
+  overflow: visible;
+}
+
+/* Game box — inside dustyDiscArea */
+.dustyBoxCase {
+  position: relative;
+  z-index: 2;
+  height: 90%;
+  aspect-ratio: 3 / 4;
+  display: flex;
+  flex-direction: column;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  background: #111;
+  flex-shrink: 0;
+}
+.dustyBoxTopBar {
+  height: 22px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  background: rgba(0, 0, 0, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.dustyBoxPCMain {
+  font-size: 9px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 1px;
+}
+.dustyBoxPCLine {
+  font-size: 6px;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.5px;
+}
+.dustyBoxStoreLabel {
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+.dustyBoxArtWrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.dustyBoxArt {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation: artFadeIn 0.25s ease forwards;
+}
+@keyframes artFadeIn {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.dustyBoxSheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    125deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 35%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  pointer-events: none;
+}
+.dustyBoxBottom {
+  height: 24px;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+.dustyBoxTitle {
+  font-size: 8px;
+  font-weight: 600;
+  color: #c8a058;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--primary-font-family);
+}
+
+/* Disc — posicionamiento solo, sin animación (la rotación va en dustyDiscSurface) */
+.dustyDisc {
+  position: absolute;
+  left: 60%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 1;
+  height: 88%;
+  width: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.85);
+}
+@keyframes spinDisc {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.dustyDiscSurface {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #0a0a0a;
+  position: relative;
+  overflow: hidden;
+  animation: spinDisc 4s linear infinite;
+}
+.dustyDiscTracks {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(255, 0, 128, 0.35) 10%,
+    rgba(255, 200, 0, 0.25) 20%,
+    rgba(0, 255, 128, 0.3) 35%,
+    rgba(0, 180, 255, 0.35) 50%,
+    rgba(180, 0, 255, 0.3) 65%,
+    rgba(255, 0, 128, 0.25) 80%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+}
+.dustyDiscLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46%;
+  height: 46%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+}
+.dustyDiscLabelArt {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: saturate(0.7) brightness(0.85);
+}
+.dustyDiscLabelOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(255, 255, 255, 0.2) 0%,
+    transparent 60%
+  );
+}
+.dustyDiscHub {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18%;
+  height: 18%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #333, #111);
+}
+.dustyDiscHole {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 7%;
+  height: 7%;
+  border-radius: 50%;
+  background: #000;
+}
+.dustyDiscSheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 28% 20%,
+    rgba(255, 255, 255, 0.45) 0%,
+    transparent 52%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Screen area — green CRT, fills dustyTVArea */
+.tv-screen {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px;
+  gap: 8px;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+.dustyDetailTitle {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(12px, 1.3vw, 18px);
+  font-weight: 900;
+  color: #b8ffb8;
+  letter-spacing: 0.06em;
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: 0 0 8px rgba(80, 255, 80, 0.5);
+}
+.dustyDetailDev {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6fcf6f;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0;
+  opacity: 0.85;
+}
+.dustyDetailDesc {
+  font-size: clamp(8px, 0.65vw, 10px);
+  color: rgba(180, 255, 180, 0.75);
+  line-height: 1.4;
+  margin: 4px 0;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+.tv-divider {
+  height: 1px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(80, 200, 80, 0.3),
+    transparent
+  );
+}
+.tv-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+.tv-meta-label {
+  font-size: 8px;
+  font-weight: 700;
+  color: rgba(80, 200, 80, 0.5);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.tv-meta-val {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(140, 200, 140, 0.88);
+  &.ok {
+    color: #6ee7b7;
+  }
+}
+.tv-play-btn {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 2px;
+  border: 1px solid rgba(80, 200, 80, 0.6);
+  background: rgba(80, 200, 80, 0.08);
+  color: #a0e8a0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  align-self: flex-start;
+  font-family: var(--primary-font-family);
+  &:hover:not(:disabled) {
+    background: rgba(80, 200, 80, 0.22);
+    border-color: rgba(80, 200, 80, 0.9);
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+/* ── GRID SCROLLER — fills dustyShelfArea ── */
+.consoleGridScroller {
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  outline: none;
+  position: relative;
+  display: block;
+  contain: layout;
+  &::-webkit-scrollbar {
+    height: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 80, 220, 0.3);
+    border-radius: 2px;
+  }
+}
+
+/* ── SPINE GRID ── */
+.consoleGrid {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0;
+  height: 100%;
+  padding: 0;
+}
+
+/* ── SPINE SLOT WRAPPER (library_unit_v2.png background) ── */
+/* library_unit_v2: 82×448 → ratio 82:448 */
+.spineSlotWrap {
+  position: relative;
+  flex-shrink: 0;
+  height: 100%;
+  aspect-ratio: 82 / 448;
+  background-image: url('../../assets/dusty/library_unit_v2.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  transform-origin: bottom center;
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    filter: brightness(1.15);
+    transform: translateY(-6px);
+    z-index: 3;
+  }
+  &.focused {
+    filter: brightness(1.3);
+    transform: translateY(-12px);
+    z-index: 5;
+  }
+}
+
+.spineSlotEmpty {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* ── SPINE CARDS ── */
+/* inner area of library_unit_v2: x=8,y=26 inside 82×448, inner=66×414 */
+/* left=8/82=9.8%, top=26/448=5.8%, right=8/82=9.8%, bottom=8/448=1.8% */
+.consoleCard {
+  position: absolute !important;
+  top: 5.8% !important;
+  left: 9.8% !important;
+  right: 9.8% !important;
+  bottom: 1.8% !important;
+  width: 80.4% !important;
+  height: 92.4% !important;
+  aspect-ratio: unset !important;
+  border-radius: 0 !important;
+  overflow: hidden;
+  display: block !important;
+  cursor: pointer;
+  border: none !important;
+  box-shadow: none !important;
+  background: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Blurred art background inside the card */
+.spineArtBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  filter: blur(10px) brightness(0.35) saturate(2);
+  transform: scale(1.05);
+  background-size: 800% auto;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+/* ── SPINE CONTENT STYLES ── */
+.spineStripe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  z-index: 3;
+}
+
+.spineContent {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 2px;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+}
+
+/* PC CD-ROM logo — top of spine */
+.spinePCWrap {
+  flex-shrink: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20%;
+  overflow: hidden;
+}
+.spinePCLogo {
+  max-width: 70%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.75;
+  display: block;
+  margin: 0 auto;
+  transform: none;
+}
+
+/* Game title/logo center */
+.spineTitleWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+  min-height: 0;
+  padding: 2px 0;
+}
+.spineLogoImg {
+  max-width: 140%;
+  max-height: 130%;
+  object-fit: contain;
+  transform: rotate(-90deg);
+  filter: brightness(1.3) drop-shadow(0 0 3px rgba(0, 0, 0, 0.95));
+}
+.spineTitleText {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: clamp(6px, 0.7vw, 9px);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--primary-font-family);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-height: 85%;
+  text-shadow:
+    0 1px 4px rgba(0, 0, 0, 1),
+    0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+/* ESRB badge — bottom of spine */
+.spineESRBWrap {
+  flex-shrink: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 15%;
+  overflow: hidden;
+}
+.spineESRBLogo {
+  max-width: 60%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.65;
+  display: block;
+  margin: 0 auto;
+  transform: none;
+}
+
+.consoleFooter {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: rgba(5, 2, 16, 0.7);
+  border-top: 1px solid rgba(168, 85, 247, 0.06);
+}
