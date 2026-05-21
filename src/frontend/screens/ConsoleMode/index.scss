@@ -861,15 +861,15 @@
   opacity: 0.85;
 }
 .dustyDetailDesc {
-  font-size: 11px;
-  color: rgba(140, 200, 140, 0.76);
-  line-height: 1.6;
-  margin: 0;
+  font-size: clamp(8px, 0.65vw, 10px);
+  color: rgba(180, 255, 180, 0.75);
+  line-height: 1.4;
+  margin: 4px 0;
   flex: 1;
-  display: -webkit-box;
-  -webkit-line-clamp: 6;
-  -webkit-box-orient: vertical;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
 }
 .tv-divider {
   height: 1px;

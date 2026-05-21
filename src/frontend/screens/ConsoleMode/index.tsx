@@ -14,6 +14,7 @@ import classNames from 'classnames'
 
 import ContextProvider from 'frontend/state/ContextProvider'
 import { getGameInfo, sendKill, updateGame } from 'frontend/helpers'
+import { timestampStore } from 'frontend/helpers/electronStores'
 import HeroicIcon from 'frontend/assets/heroic-icon.svg?react'
 import bgAsset from 'frontend/assets/dusty/background.png'
 import { CachedImage } from 'frontend/components/UI'
@@ -38,6 +39,14 @@ import type { GameInfo, Runner } from 'common/types'
 type StoreKey = Runner | 'all'
 
 const EMPTY_SLOTS = 40
+
+const convertMinsToHrsMins = (mins: number) => {
+  let h: string | number = Math.floor(mins / 60)
+  let m: string | number = mins % 60
+  h = h < 10 ? '0' + h : h
+  m = m < 10 ? '0' + m : m
+  return `${h}h ${m}m`
+}
 
 const CANCEL_DOWNLOAD_COPY = {
   update: {
@@ -91,6 +100,7 @@ export default function ConsoleMode() {
     null
   )
   const [focusedGameInfo, setFocusedGameInfo] = useState<GameInfo | null>(null)
+  const [focusedDesc, setFocusedDesc] = useState<string>('')
 
   const { connected: gamepadConnected, layout: controllerLayout } =
     useGamepadInfo()
@@ -161,9 +171,36 @@ export default function ConsoleMode() {
       setFocusedGameInfo(null)
       return
     }
+    setFocusedGameInfo(null)
     getGameInfo(game.app_name, game.runner)
       .then((info) => setFocusedGameInfo(info ?? game))
       .catch(() => setFocusedGameInfo(game))
+  }, [focusedIndex, visibleGames])
+
+  useEffect(() => {
+    const game = visibleGames[focusedIndex]
+    if (!game) {
+      setFocusedDesc('')
+      return
+    }
+    setFocusedDesc('...')
+    window.api
+      .getExtraInfo(game.app_name, game.runner)
+      .then((extra) => {
+        if (!extra) {
+          setFocusedDesc('')
+          return
+        }
+        const title = game.overrides?.title || game.title
+        const desc =
+          extra.about?.shortDescription ||
+          (extra.about?.description && extra.about.description !== title
+            ? extra.about.description
+            : '') ||
+          ''
+        setFocusedDesc(desc)
+      })
+      .catch(() => setFocusedDesc(''))
   }, [focusedIndex, visibleGames])
 
   const storesWithGames = useMemo(() => {
@@ -472,7 +509,7 @@ export default function ConsoleMode() {
             })}
             onClick={() => setFilteringByInstalled(!filteringByInstalled)}
           >
-            {t('status.installed', 'Installed')}
+            {t('status.installed', 'Instalado')}
           </button>
           <div className="consoleDividerVertical" />
           {storeFilters
@@ -586,6 +623,18 @@ export default function ConsoleMode() {
           (() => {
             const game = visibleGames[focusedIndex]
             const info = focusedGameInfo ?? game
+            const isLoadingInfo = focusedGameInfo === null
+            const tsInfo = timestampStore.get_nodefault(game.app_name)
+            const totalPlayed = tsInfo?.totalPlayed
+              ? convertMinsToHrsMins(tsInfo.totalPlayed)
+              : null
+            const lastPlayed = tsInfo?.lastPlayed
+              ? new Intl.DateTimeFormat(undefined, {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric'
+                }).format(new Date(tsInfo.lastPlayed))
+              : null
             return (
               <div className="tv-screen" key={`detail-${game.app_name}`}>
                 <h2 className="dustyDetailTitle">
@@ -594,20 +643,28 @@ export default function ConsoleMode() {
                 {info.developer && (
                   <p className="dustyDetailDev">{info.developer}</p>
                 )}
-                {info.extra?.about?.shortDescription && (
-                  <p className="dustyDetailDesc">
-                    {info.extra.about.shortDescription}
-                  </p>
-                )}
+                <p className="dustyDetailDesc">{focusedDesc}</p>
                 <div className="tv-divider" />
+                {totalPlayed && (
+                  <div className="tv-meta">
+                    <span className="tv-meta-label">JUGADO</span>
+                    <span className="tv-meta-val ok">{totalPlayed}</span>
+                  </div>
+                )}
+                {lastPlayed && (
+                  <div className="tv-meta">
+                    <span className="tv-meta-label">ÚLTIMA VEZ</span>
+                    <span className="tv-meta-val">{lastPlayed}</span>
+                  </div>
+                )}
                 <div className="tv-meta">
                   <span className="tv-meta-label">ESTADO</span>
                   <span
                     className={`tv-meta-val ${game.is_installed ? 'ok' : ''}`}
                   >
                     {game.is_installed
-                      ? t('status.installed', 'Installed')
-                      : t('game.notInstalled', 'Not installed')}
+                      ? t('status.installed', 'Instalado')
+                      : t('game.notInstalled', 'No instalado')}
                   </span>
                 </div>
                 <button
@@ -616,8 +673,8 @@ export default function ConsoleMode() {
                   disabled={!idle}
                 >
                   {game.is_installed
-                    ? `▶ ${t('label.playing.start', 'Play')}`
-                    : `↓ ${t('game.install', 'Install')}`}
+                    ? `▶ ${t('label.playing.start', 'Jugar')}`
+                    : `↓ ${t('game.install', 'Instalar')}`}
                 </button>
               </div>
             )
