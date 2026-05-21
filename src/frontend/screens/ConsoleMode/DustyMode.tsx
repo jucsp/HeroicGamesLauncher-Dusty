@@ -489,7 +489,11 @@ export default function DustyMode() {
   }
 
   return (
-    <div className={classNames('ConsoleMode', 'ConsoleMode--dusty', { launching: !!launchingGame })}>
+    <div
+      className={classNames('ConsoleMode', 'ConsoleMode--dusty', {
+        launching: !!launchingGame
+      })}
+    >
       {/* Fondo completo */}
       <img src={bgAsset} className="dusty-bg" alt="" />
 
