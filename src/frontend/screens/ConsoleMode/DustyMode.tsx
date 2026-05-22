@@ -733,39 +733,46 @@ export default function DustyMode() {
                 {info.developer && (
                   <p className="dustyDetailDev">{info.developer}</p>
                 )}
-                <p className="dustyDetailDesc">{focusedDesc}</p>
-                <div className="tv-divider" />
-                {totalPlayed && (
-                  <div className="tv-meta">
-                    <span className="tv-meta-label">JUGADO</span>
-                    <span className="tv-meta-val ok">{totalPlayed}</span>
+
+                <div className="tv-body">
+                  <div className="tv-body-left">
+                    <p className="dustyDetailDesc">{focusedDesc}</p>
                   </div>
-                )}
-                {lastPlayed && (
-                  <div className="tv-meta">
-                    <span className="tv-meta-label">ÚLTIMA VEZ</span>
-                    <span className="tv-meta-val">{lastPlayed}</span>
+
+                  <div className="tv-body-right">
+                    {totalPlayed && (
+                      <div className="tv-meta">
+                        <span className="tv-meta-label">JUGADO</span>
+                        <span className="tv-meta-val ok">{totalPlayed}</span>
+                      </div>
+                    )}
+                    {lastPlayed && (
+                      <div className="tv-meta">
+                        <span className="tv-meta-label">ÚLTIMA VEZ</span>
+                        <span className="tv-meta-val">{lastPlayed}</span>
+                      </div>
+                    )}
+                    <div className="tv-meta">
+                      <span className="tv-meta-label">ESTADO</span>
+                      <span
+                        className={`tv-meta-val ${game.is_installed ? 'ok' : ''}`}
+                      >
+                        {game.is_installed
+                          ? t('status.installed', 'Instalado')
+                          : t('game.notInstalled', 'No instalado')}
+                      </span>
+                    </div>
+                    <button
+                      className="tv-play-btn"
+                      onClick={() => activateGame(game)}
+                      disabled={!idle}
+                    >
+                      {game.is_installed
+                        ? `▶ ${t('label.playing.start', 'Jugar')}`
+                        : `↓ ${t('game.install', 'Instalar')}`}
+                    </button>
                   </div>
-                )}
-                <div className="tv-meta">
-                  <span className="tv-meta-label">ESTADO</span>
-                  <span
-                    className={`tv-meta-val ${game.is_installed ? 'ok' : ''}`}
-                  >
-                    {game.is_installed
-                      ? t('status.installed', 'Instalado')
-                      : t('game.notInstalled', 'No instalado')}
-                  </span>
                 </div>
-                <button
-                  className="tv-play-btn"
-                  onClick={() => activateGame(game)}
-                  disabled={!idle}
-                >
-                  {game.is_installed
-                    ? `▶ ${t('label.playing.start', 'Jugar')}`
-                    : `↓ ${t('game.install', 'Instalar')}`}
-                </button>
               </div>
             )
           })()}
