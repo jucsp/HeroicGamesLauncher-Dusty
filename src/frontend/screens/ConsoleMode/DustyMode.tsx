@@ -17,7 +17,9 @@ import ContextProvider from 'frontend/state/ContextProvider'
 import { getGameInfo, sendKill, updateGame } from 'frontend/helpers'
 import { timestampStore } from 'frontend/helpers/electronStores'
 import HeroicIcon from 'frontend/assets/heroic-icon.svg?react'
-import bgAsset from 'frontend/assets/dusty/background.png'
+import bgAsset from 'frontend/assets/dusty/background_clean.png'
+import exodiaAsset from 'frontend/assets/dusty/exodia.png'
+import stormtrooperAsset from 'frontend/assets/dusty/stormtrooper.png'
 import { CachedImage } from 'frontend/components/UI'
 
 import ConfirmDialog from './components/ConfirmDialog'
@@ -489,6 +491,29 @@ export default function DustyMode() {
     }
   }
 
+  const scaledCharacter = (
+    x: number,
+    yBottom: number,
+    w: number,
+    h: number
+  ): React.CSSProperties => {
+    const scaleX = windowWidth / BG_W
+    const scaleY = windowHeight / BG_H
+    const scale = Math.min(scaleX, scaleY)
+    const scaledW = w * scale
+    const scaledH = h * scale
+    // Anclar al piso: yBottom es la coordenada Y del borde inferior
+    // del personaje en el canvas original
+    const bottomPx = (BG_H - yBottom) * scaleY
+    return {
+      position: 'absolute',
+      left: `${x * scaleX}px`,
+      bottom: `${bottomPx}px`,
+      width: `${scaledW}px`,
+      height: `${scaledH}px`,
+    }
+  }
+
   return (
     <div
       className={classNames('ConsoleMode', 'ConsoleMode--dusty', {
@@ -497,6 +522,67 @@ export default function DustyMode() {
     >
       {/* Fondo completo */}
       <img src={bgAsset} className="dusty-bg" alt="" />
+
+      <div
+        style={{
+          ...scaledCharacter(430, 855, 363, 315),
+          pointerEvents: 'none',
+          zIndex: 2,
+        }}
+      >
+        <img
+          src={exodiaAsset}
+          alt=""
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '-8px',
+            left: '8%',
+            width: '84%',
+            height: '28px',
+            background: 'radial-gradient(ellipse at 50% 10%, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)',
+            filter: 'blur(6px)',
+            transform: 'scaleY(0.6)',
+          }}
+        />
+      </div>
+      <div
+        style={{
+          ...scaledCharacter(1488, 840, 130, 185),
+          pointerEvents: 'none',
+          zIndex: 2,
+        }}
+      >
+        <img
+          src={stormtrooperAsset}
+          alt=""
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '-6px',
+            left: '12%',
+            width: '76%',
+            height: '22px',
+            background: 'radial-gradient(ellipse at 50% 10%, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)',
+            filter: 'blur(5px)',
+            transform: 'scaleY(0.6)',
+          }}
+        />
+      </div>
 
       {/* Menú superior — bg coords: x=63, y=109, w=2632, h=144 */}
       <div
