@@ -20,6 +20,12 @@ import HeroicIcon from 'frontend/assets/heroic-icon.svg?react'
 import bgAsset from 'frontend/assets/dusty/background_clean.png'
 import exodiaAsset from 'frontend/assets/dusty/exodia.png'
 import stormtrooperAsset from 'frontend/assets/dusty/stormtrooper.png'
+import pcCdRomHorizontalImg from 'frontend/assets/dusty/PC_CD-ROM_horizontal.png'
+import epicImg from 'frontend/assets/dusty/epic.png'
+import battleImg from 'frontend/assets/dusty/battle.png'
+import gogImg from 'frontend/assets/dusty/gog.png'
+import steamImg from 'frontend/assets/dusty/steam.png'
+import esrbTeenImg from 'frontend/assets/dusty/ESRB_Teen.png'
 import { CachedImage } from 'frontend/components/UI'
 
 import ConfirmDialog from './components/ConfirmDialog'
@@ -654,54 +660,52 @@ export default function DustyMode() {
               game.art_square ||
               game.art_cover ||
               ''
-            const STORE_LABELS: Record<string, string> = {
-              legendary: 'EPIC GAMES',
-              gog: 'GOG',
-              nile: 'AMAZON',
-              zoom: 'ZOOM',
-              sideload: 'CUSTOM'
+            const STORE_LOGOS: Record<string, string> = {
+              legendary: epicImg,
+              gog: gogImg,
+              sideload: steamImg,
+              nile: battleImg,
             }
+            const storeLogoImg = STORE_LOGOS[game.runner] ?? pcCdRomHorizontalImg
             return (
               <>
-                <div className="dustyBoxCase">
-                  <div className="dustyBoxTopBar">
-                    <span className="dustyBoxPCMain">PC</span>
-                    <span className="dustyBoxPCLine">CD-ROM</span>
-                    <span className="dustyBoxStoreLabel">
-                      {STORE_LABELS[game.runner] ?? 'PC'}
-                    </span>
+                {/* Carátula */}
+                <div style={{ position: 'relative', height: '100%', flexShrink: 0, display: 'flex', alignItems: 'flex-end' }}>
+                  <div className="dustyBoxCase">
+                    <div className="dustyBoxArtWrap">
+                      <CachedImage className="dustyBoxArt" src={coverUrl} key={`art-${game.app_name}`} alt="" />
+                      <div className="dustyBoxSheen" />
+                      <div className="dustyBoxCornerTL" key={`corner-tl-${game.app_name}`}>
+                        <img src={pcCdRomHorizontalImg} alt="PC CD-ROM" />
+                      </div>
+                      <div className="dustyBoxCornerBL" key={`corner-bl-${game.app_name}`}>
+                        <img src={storeLogoImg} alt="store" />
+                      </div>
+                      <div className="dustyBoxCornerBR" key={`corner-br-${game.app_name}`}>
+                        <img src={esrbTeenImg} alt="ESRB Teen" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="dustyBoxArtWrap">
-                    <CachedImage
-                      key={`art-${game.app_name}`}
-                      src={coverUrl}
-                      alt={game.title}
-                      className="dustyBoxArt"
-                    />
-                    <div className="dustyBoxSheen" />
-                  </div>
-                  <div className="dustyBoxBottom">
-                    <span className="dustyBoxTitle">
-                      {game.overrides?.title || game.title}
-                    </span>
-                  </div>
+                  {/* Sombra trasera carátula */}
+                  <div className="dustyBoxShadowBack" />
                 </div>
 
-                <div className="dustyDisc" key={`disc-${game.app_name}`}>
-                  <div className="dustyDiscSurface">
-                    <div className="dustyDiscTracks" />
-                    <div className="dustyDiscLabel">
-                      <CachedImage
-                        src={coverUrl}
-                        alt={game.title}
-                        className="dustyDiscLabelArt"
-                      />
-                      <div className="dustyDiscLabelOverlay" />
-                      <div className="dustyDiscHub" />
-                      <div className="dustyDiscHole" />
+                {/* Disco */}
+                <div className="dustyDiscWrapper">
+                  <div className="dustyDisc" key={`disc-${game.app_name}`}>
+                    <div className="dustyDiscSurface">
+                      <div className="dustyDiscTracks" />
+                      <div className="dustyDiscLabel">
+                        <CachedImage src={coverUrl} alt={game.title} className="dustyDiscLabelArt" />
+                        <div className="dustyDiscLabelOverlay" />
+                        <div className="dustyDiscHub" />
+                        <div className="dustyDiscHole" />
+                      </div>
+                      <div className="dustyDiscSheen" />
                     </div>
-                    <div className="dustyDiscSheen" />
                   </div>
+                  {/* Sombra trasera disco */}
+                  <div className="dustyDiscShadowBack" />
                 </div>
               </>
             )
