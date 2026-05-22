@@ -1,5 +1,19 @@
 # Changelog
 
+---
+
+## [Dusty Fork] 2.22.0-dusty.2 — 2026-05-22
+
+### Dusty UI — Console Mode
+
+- **[Dusty] Personajes como overlays independientes**: Exodia y Stormtrooper extraídos del fondo como assets PNG separados. Posicionamiento con `scaledCharacter()` (escala uniforme, anclado al piso) y sombras de contacto en el suelo.
+- **[Dusty] Panel TV — layout dos columnas**: Descripción del juego a la izquierda; tiempo jugado, última sesión, estado e instalación a la derecha. Tipografía fluid con `clamp()`, estilo neonwave verde.
+- **[Dusty] Carátula vitrina rediseñada**: Eliminadas barras superior e inferior. Esquinas con logos contextuales: PC CD-ROM (arriba izquierda), logo de plataforma/store (abajo izquierda), ESRB Teen (abajo derecha). Sheen neonwave con gradientes púrpura/cyan. Sombras de profundidad (carátula y disco).
+- **[i18n]** Clave `console.card.needsUpdate` agregada.
+- **[docs]** Guía de integración de la rama `dusty-select-themes`.
+
+---
+
 ## 2.2.6 Oden - Hotfix 5
 
 ### What's Changed
